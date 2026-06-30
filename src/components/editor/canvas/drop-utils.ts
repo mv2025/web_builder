@@ -47,9 +47,21 @@ export function findDropTarget(
     }
   })
 
-  const directChildren = Array.from(
+  let directChildren = Array.from(
     bestContainer.el.querySelectorAll<HTMLElement>(":scope > [data-node-id]")
   ).filter((el) => el.getAttribute("data-node-id") !== excludeId)
+
+  // For containers that render children in nested wrappers (card-slider, tabs, etc.),
+  // direct children won't be found. Fall back to all descendant node-id elements
+  // whose data-parent-id matches this container.
+  if (directChildren.length === 0 && bestContainer.id) {
+    const nested = Array.from(
+      bestContainer.el.querySelectorAll<HTMLElement>("[data-node-id]")
+    ).filter((el) => el.getAttribute("data-node-id") !== excludeId)
+    if (nested.length > 0) {
+      return { parentId: bestContainer.id, index: nested.length }
+    }
+  }
 
   if (directChildren.length === 0) {
     return { parentId: bestContainer.id, index: 0 }

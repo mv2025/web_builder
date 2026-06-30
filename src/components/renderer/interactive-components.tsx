@@ -328,14 +328,20 @@ function CardSliderInner({
             key={i}
             style={{
               flex: `0 0 calc(${cardWidthPercent}% - ${gap * (visible - 1) / visible}px)`,
-              background: cardBg,
-              borderRadius: cardBorderRadius,
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              border: "1px solid rgba(128,128,128,0.15)",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+              ...(renderCard ? {
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+              } : {
+                background: cardBg,
+                borderRadius: cardBorderRadius,
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                border: "1px solid rgba(128,128,128,0.15)",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+              }),
             }}
           >
             {renderCard ? renderCard(i) : (() => {

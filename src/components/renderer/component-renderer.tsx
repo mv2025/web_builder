@@ -1601,16 +1601,7 @@ function CardSliderContainer({
               }}
             >
               <ComponentRenderer
-                node={{
-                  ...child,
-                  styles: {
-                    ...child.styles,
-                    desktop: {
-                      ...child.styles.desktop,
-                      width: "100%",
-                    },
-                  },
-                }}
+                node={child}
                 isPreview={isPreview}
                 selectedIds={selectedIds}
                 onSelect={onSelect}
