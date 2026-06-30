@@ -18,6 +18,7 @@ interface VerticalScrollCardsBlockProps {
   scrollHeight?: string
   viewportHeight?: string
   bgColor?: string
+  isPreview?: boolean
   [key: string]: unknown
 }
 
@@ -32,34 +33,51 @@ export function VerticalScrollCardsBlock({
     { title: "OPTIMIZE MOBILE PERFORMANCE", description: "Ensure a lightweight experience on touch-sensitive devices. High frame-rate transitions and fluid layout shifts keep your site performing beautifully across modern viewports and devices." },
   ],
   scrollHeight = "2000px",
-  viewportHeight = "500px",
+  viewportHeight = "100vh",
   bgColor = "#0a0a0a",
+  isPreview = false,
 }: VerticalScrollCardsBlockProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [scrollContainer, setScrollContainer] = useState<HTMLElement | undefined>(undefined)
+  const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null)
+  const scrollContainerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
     const canvas = el.closest("[data-canvas-scroll]") as HTMLElement | null
-    if (canvas) setScrollContainer(canvas)
+    if (canvas) {
+      scrollContainerRef.current = canvas
+      setScrollContainer(canvas)
+    } else {
+      scrollContainerRef.current = document.documentElement
+      setScrollContainer(document.documentElement)
+    }
 
-    const wrapper = canvas || undefined
-    const lenis = new Lenis({
-      wrapper,
-      content: wrapper?.firstElementChild as HTMLElement || undefined,
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    })
-    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf) }
-    requestAnimationFrame(raf)
-    return () => lenis.destroy()
-  }, [])
+    if (isPreview) {
+      const wrapper = canvas || undefined
+      const lenis = new Lenis({
+        wrapper,
+        content: wrapper?.firstElementChild as HTMLElement || undefined,
+        duration: 1.2,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      })
+      let rafId: number
+      function raf(time: number) {
+        lenis.raf(time)
+        rafId = requestAnimationFrame(raf)
+      }
+      rafId = requestAnimationFrame(raf)
+      return () => {
+        lenis.destroy()
+        cancelAnimationFrame(rafId)
+      }
+    }
+  }, [isPreview])
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    container: scrollContainer ? { current: scrollContainer } : undefined,
+    container: scrollContainer ? scrollContainerRef : undefined,
     offset: ["start start", "end end"],
   })
 
@@ -93,6 +111,7 @@ export function VerticalScrollCardsBlock({
         padding: "0 48px",
         alignItems: "center",
       }}>
+        {/* Left column (sticky heading) */}
         <div style={{
           width: "50%",
           height: "100%",
@@ -120,6 +139,7 @@ export function VerticalScrollCardsBlock({
           </div>
         </div>
 
+        {/* Right column (scroll content cards) */}
         <div style={{
           width: "50%",
           height: "100%",

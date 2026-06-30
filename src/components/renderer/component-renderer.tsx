@@ -1235,11 +1235,11 @@ function ComponentContent({ node, isPreview, selectedIds, onSelect, onHover, bre
 
     // ── Animated ──────────────────────────────────────────────────────────────
     case "horizontal-scroll":
-      return <HorizontalScrollBlock {...props} />
+      return <HorizontalScrollBlock {...props} isPreview={isPreview} />
     case "vertical-scroll-cards":
-      return <VerticalScrollCardsBlock {...props} />
+      return <VerticalScrollCardsBlock {...props} isPreview={isPreview} />
     case "text-zoom-scroll":
-      return <TextZoomScrollBlock {...props} />
+      return <TextZoomScrollBlock {...props} isPreview={isPreview} />
 
     default:
       return (
