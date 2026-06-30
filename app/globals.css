@@ -1,0 +1,346 @@
+@import "tailwindcss";
+
+/* ─── DARK THEME (default) ─────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg: #09090b;
+  --bg-secondary: #111113;
+  --bg-tertiary: #18181b;
+  --bg-elevated: #1c1c1f;
+  --bg-hover: rgba(255,255,255,0.04);
+  --bg-active: rgba(255,255,255,0.08);
+
+  --fg: #fafafa;
+  --fg-secondary: #e4e4e7;
+  --fg-muted: #a1a1aa;
+  --fg-faint: #71717a;
+  --fg-ghost: #52525b;
+  --fg-dim: #3f3f46;
+
+  --border: #27272a;
+  --border-subtle: rgba(255,255,255,0.08);
+  --border-focus: rgba(14,165,233,0.5);
+
+  --accent: #0ea5e9;
+  --accent-hover: #38bdf8;
+  --accent-muted: rgba(14,165,233,0.15);
+  --accent-border: rgba(14,165,233,0.3);
+  --accent-glow: rgba(14,165,233,0.4);
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #f43f5e;
+
+  /* Editor-specific */
+  --editor-sidebar: #111113;
+  --editor-toolbar: #0f0f11;
+  --editor-canvas: #060608;
+  --editor-canvas-dot: rgba(255,255,255,0.03);
+  --editor-selection-bg: rgba(14,165,233,0.12);
+
+  /* Toggle */
+  --toggle-bg: rgba(255,255,255,0.1);
+  --toggle-knob: #fafafa;
+
+  /* Card / surface */
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.08);
+  --card-hover-border: rgba(255,255,255,0.15);
+
+  /* Input */
+  --input-bg: rgba(255,255,255,0.04);
+  --input-border: rgba(255,255,255,0.08);
+  --input-fg: #e4e4e7;
+  --input-placeholder: #52525b;
+
+  /* Hero / landing */
+  --hero-heading: linear-gradient(135deg, #ffffff 40%, #a1a1aa 100%);
+  --hero-gradient-from: rgba(14,165,233,0.15);
+  --hero-gradient-to: rgba(217,70,239,0.12);
+  --hero-secondary-bg: rgba(255,255,255,0.06);
+  --hero-secondary-border: rgba(255,255,255,0.12);
+
+  /* Scrollbar */
+  --scrollbar-thumb: #3f3f46;
+  --scrollbar-hover: #52525b;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-panel: 0 32px 80px rgba(0,0,0,0.6);
+
+  /* Misc */
+  --badge-bg: rgba(14,165,233,0.1);
+  --badge-border: rgba(14,165,233,0.3);
+  --pill-bg: rgba(255,255,255,0.05);
+  --pill-border: rgba(255,255,255,0.08);
+  --divider: rgba(255,255,255,0.06);
+  --marquee-text: #27272a;
+  --overlay: rgba(0,0,0,0.5);
+  --canvas-node-bg: #09090b;
+
+  /* Builder component colors */
+  --block-bg: rgba(255,255,255,0.03);
+  --block-border: rgba(255,255,255,0.08);
+  --block-icon-bg: rgba(14,165,233,0.1);
+  --testimonial-stars: #f59e0b;
+  --pricing-popular-bg: rgba(14,165,233,0.08);
+  --pricing-popular-border: rgba(14,165,233,0.4);
+  --cta-section-bg: rgba(255,255,255,0.02);
+  --cta-section-border: rgba(255,255,255,0.06);
+  --footer-border: rgba(255,255,255,0.06);
+
+  --background: var(--bg);
+  --foreground: var(--fg);
+}
+
+/* ─── LIGHT THEME ──────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f1f3f5;
+  --bg-elevated: #ffffff;
+  --bg-hover: rgba(0,0,0,0.03);
+  --bg-active: rgba(0,0,0,0.06);
+
+  --fg: #111113;
+  --fg-secondary: #27272a;
+  --fg-muted: #52525b;
+  --fg-faint: #71717a;
+  --fg-ghost: #a1a1aa;
+  --fg-dim: #d4d4d8;
+
+  --border: #e4e4e7;
+  --border-subtle: rgba(0,0,0,0.08);
+  --border-focus: rgba(14,165,233,0.5);
+
+  --accent: #0284c7;
+  --accent-hover: #0ea5e9;
+  --accent-muted: rgba(2,132,199,0.1);
+  --accent-border: rgba(2,132,199,0.3);
+  --accent-glow: rgba(2,132,199,0.25);
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #e11d48;
+
+  /* Editor-specific */
+  --editor-sidebar: #f8f9fa;
+  --editor-toolbar: #ffffff;
+  --editor-canvas: #eef0f2;
+  --editor-canvas-dot: rgba(0,0,0,0.06);
+  --editor-selection-bg: rgba(2,132,199,0.1);
+
+  /* Toggle */
+  --toggle-bg: rgba(0,0,0,0.08);
+  --toggle-knob: #ffffff;
+
+  /* Card / surface */
+  --card-bg: #ffffff;
+  --card-border: #e4e4e7;
+  --card-hover-border: #d4d4d8;
+
+  /* Input */
+  --input-bg: #ffffff;
+  --input-border: #e4e4e7;
+  --input-fg: #27272a;
+  --input-placeholder: #a1a1aa;
+
+  /* Hero / landing */
+  --hero-heading: linear-gradient(135deg, #111113 40%, #52525b 100%);
+  --hero-gradient-from: rgba(14,165,233,0.08);
+  --hero-gradient-to: rgba(168,85,247,0.06);
+  --hero-secondary-bg: rgba(0,0,0,0.04);
+  --hero-secondary-border: rgba(0,0,0,0.1);
+
+  /* Scrollbar */
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-hover: #a1a1aa;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-panel: 0 8px 40px rgba(0,0,0,0.08);
+
+  /* Misc */
+  --badge-bg: rgba(2,132,199,0.08);
+  --badge-border: rgba(2,132,199,0.25);
+  --pill-bg: rgba(0,0,0,0.04);
+  --pill-border: rgba(0,0,0,0.08);
+  --divider: #e4e4e7;
+  --marquee-text: #e4e4e7;
+  --overlay: rgba(0,0,0,0.3);
+  --canvas-node-bg: #ffffff;
+
+  /* Builder component colors */
+  --block-bg: #ffffff;
+  --block-border: #e4e4e7;
+  --block-icon-bg: rgba(2,132,199,0.08);
+  --testimonial-stars: #f59e0b;
+  --pricing-popular-bg: rgba(2,132,199,0.06);
+  --pricing-popular-border: rgba(2,132,199,0.4);
+  --cta-section-bg: #f8f9fa;
+  --cta-section-border: #e4e4e7;
+  --footer-border: #e4e4e7;
+
+  --background: var(--bg);
+  --foreground: var(--fg);
+}
+
+/* ─── Tailwind theme bridge ─────────────────────────────────────────── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ─── Panel sizes ─────────────────────────────────────────────────────────── */
+:root {
+  --panel-width-left: 260px;
+  --panel-width-right: 280px;
+  --toolbar-height: 48px;
+}
+
+/* ─── Base resets ──────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* Selection ring */
+.node-selected {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 1px;
+}
+.node-hovered {
+  outline: 1px dashed var(--border-focus) !important;
+  outline-offset: 1px;
+}
+.drop-target-active {
+  background: var(--accent-muted) !important;
+  outline: 1.5px dashed var(--accent) !important;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #0ea5e9 0%, #d946ef 50%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to { background-position: 200% center; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow); }
+}
+
+.animate-marquee { animation: marquee 20s linear infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-glow { animation: glow-pulse 2s ease-in-out infinite; }
+
+/* Utilities */
+.no-select { user-select: none; -webkit-user-select: none; }
+.panel-slide { transition: width 200ms ease, opacity 200ms ease; }
+
+/* Smooth theme transitions for editor UI only — exclude canvas elements */
+[data-theme] *:not([data-canvas-root] *):not([data-canvas-root]) {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+[data-theme] input:not([data-canvas-root] input),
+[data-theme] textarea:not([data-canvas-root] textarea),
+[data-theme] select:not([data-canvas-root] select),
+[data-theme] button:not([data-canvas-root] button),
+[data-theme] a:not([data-canvas-root] a) {
+  transition-duration: 0.15s;
+}
+
+/* ─── Canvas responsive: content scaling ─────────────────────────────────── */
+/* ALL wrappers auto-size to fit content on mobile/tablet (except map/embed which need fixed height) */
+[data-breakpoint="mobile"] > [data-node-id]:not([data-node-type="map"]):not([data-node-type="embed"]),
+[data-breakpoint="tablet"] > [data-node-id]:not([data-node-type="map"]):not([data-node-type="embed"]),
+[data-breakpoint="mobile"] [data-node-id] [data-node-id]:not([data-node-type="map"]):not([data-node-type="embed"]),
+[data-breakpoint="tablet"] [data-node-id] [data-node-id]:not([data-node-type="map"]):not([data-node-type="embed"]) {
+  height: auto !important;
+  min-height: auto !important;
+}
+/* Map/embed on mobile: keep min-height but allow width to scale */
+[data-breakpoint="mobile"] [data-node-type="map"],
+[data-breakpoint="tablet"] [data-node-type="map"],
+[data-breakpoint="mobile"] [data-node-type="embed"],
+[data-breakpoint="tablet"] [data-node-type="embed"] {
+  width: 100% !important;
+  min-height: 250px !important;
+}
+/* Images and videos scale to fit parent, never overflow */
+[data-breakpoint="mobile"] [data-node-id] img,
+[data-breakpoint="tablet"] [data-node-id] img,
+[data-breakpoint="mobile"] [data-node-id] video,
+[data-breakpoint="tablet"] [data-node-id] video {
+  max-width: 100% !important;
+}
+[data-breakpoint="mobile"] [data-node-id] figure,
+[data-breakpoint="tablet"] [data-node-id] figure {
+  max-width: 100% !important;
+  height: auto !important;
+}
+/* Card-slider slots: direct container child fills the slot */
+[data-card-slot] > [data-node-id] {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+}
+/* Dropped components inside card slots: stay in flow but allow resize */
+[data-card-slot] [data-node-id] [data-node-id] {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
