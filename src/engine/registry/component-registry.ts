@@ -679,7 +679,7 @@ const registry: Record<ComponentType, ComponentMeta> = {
         { title: "Project Gamma", category: "BRANDING", src: "", placeholder: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600" },
         { title: "Project Delta", category: "ARCHITECTURE", src: "", placeholder: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600" },
       ],
-      cardWidth: "400px", gap: "24px", aspectRatio: "4/3",
+      cardWidth: "420px", gap: "48px", aspectRatio: "16/10",
       showLabels: true, borderRadius: "16px", overlayColor: "rgba(0,0,0,0.3)",
       bgColor: "#0a0a0a",
     },

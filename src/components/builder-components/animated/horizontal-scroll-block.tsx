@@ -21,8 +21,8 @@ interface HorizontalScrollBlockProps {
   overlayColor?: string
   scrollHeight?: string
   viewportHeight?: string
-  xEnd?: string
   bgColor?: string
+  isPreview?: boolean
   [key: string]: unknown
 }
 
@@ -33,44 +33,87 @@ export function HorizontalScrollBlock({
     { title: "Project Gamma", category: "BRANDING", src: "", placeholder: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600" },
     { title: "Project Delta", category: "ARCHITECTURE", src: "", placeholder: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600" },
   ],
-  cardWidth = "400px",
-  gap = "24px",
-  aspectRatio = "4/3",
+  cardWidth = "420px",
+  gap = "48px",
+  aspectRatio = "16/10",
   showLabels = true,
-  borderRadius = "16px",
-  overlayColor = "rgba(0,0,0,0.3)",
-  scrollHeight = "2000px",
-  viewportHeight = "500px",
-  xEnd = "-65%",
-  bgColor = "#0a0a0a",
+  borderRadius = "20px",
+  overlayColor = "rgba(0,0,0,0.25)",
+  scrollHeight = "2400px",
+  viewportHeight = "100vh",
+  bgColor = "#08080a",
+  isPreview = false,
 }: HorizontalScrollBlockProps) {
   const targetRef = useRef<HTMLDivElement>(null)
-  const [scrollContainer, setScrollContainer] = useState<HTMLElement | undefined>(undefined)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  
+  const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null)
+  const containerRef = useRef<HTMLElement | null>(null)
+  const [scrollRange, setScrollRange] = useState(0)
 
   useEffect(() => {
     const el = targetRef.current
     if (!el) return
     const canvas = el.closest("[data-canvas-scroll]") as HTMLElement | null
-    if (canvas) setScrollContainer(canvas)
+    if (canvas) {
+      containerRef.current = canvas
+      setScrollContainer(canvas)
+    } else {
+      containerRef.current = document.documentElement
+      setScrollContainer(document.documentElement)
+    }
 
-    const wrapper = canvas || undefined
-    const lenis = new Lenis({
-      wrapper,
-      content: wrapper?.firstElementChild as HTMLElement || undefined,
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    })
-    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf) }
-    requestAnimationFrame(raf)
-    return () => lenis.destroy()
-  }, [])
+    // Only instantiate Lenis in preview mode or standalone mode to prevent multi-instance conflicts in edit mode
+    if (isPreview) {
+      const wrapper = canvas || undefined
+      const lenis = new Lenis({
+        wrapper,
+        content: wrapper?.firstElementChild as HTMLElement || undefined,
+        duration: 1.2,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      })
+      let rafId: number
+      function raf(time: number) {
+        lenis.raf(time)
+        rafId = requestAnimationFrame(raf)
+      }
+      rafId = requestAnimationFrame(raf)
+      return () => {
+        lenis.destroy()
+        cancelAnimationFrame(rafId)
+      }
+    }
+  }, [isPreview])
+
+  // Measure dynamic scroll range
+  useEffect(() => {
+    const handleResize = () => {
+      if (scrollRef.current && targetRef.current) {
+        const viewportWidth = targetRef.current.offsetWidth
+        const contentWidth = scrollRef.current.scrollWidth
+        // Adding safety padding for ends
+        setScrollRange(Math.max(0, contentWidth - viewportWidth + 80))
+      }
+    }
+
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    const timer = setTimeout(handleResize, 200)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+      clearTimeout(timer)
+    }
+  }, [cards, cardWidth, gap])
 
   const { scrollYProgress } = useScroll({
     target: targetRef,
-    container: scrollContainer ? { current: scrollContainer } : undefined,
+    container: scrollContainer ? containerRef : undefined,
   })
-  const xTransform = useTransform(scrollYProgress, [0, 1], ["0%", xEnd])
+
+  // Dynamic X translation
+  const xTransform = useTransform(scrollYProgress, [0, 1], [0, -scrollRange])
 
   return (
     <div
@@ -92,27 +135,31 @@ export function HorizontalScrollBlock({
         flexDirection: "column",
         justifyContent: "center",
         overflow: "hidden",
-        paddingLeft: "40px",
+        paddingLeft: "80px",
       }}>
         <motion.div
+          ref={scrollRef}
           style={{
             x: xTransform,
             display: "flex",
             flexDirection: "row",
             gap,
             width: "max-content",
-            paddingRight: "40px",
+            paddingRight: "80px",
           }}
         >
           {cards.map((card, i) => (
-            <div
+            <motion.div
               key={i}
               style={{
                 width: cardWidth,
                 flexShrink: 0,
                 display: "flex",
                 flexDirection: "column",
+                cursor: "pointer",
               }}
+              whileHover="hover"
+              initial="initial"
             >
               <div style={{
                 width: "100%",
@@ -120,35 +167,63 @@ export function HorizontalScrollBlock({
                 position: "relative",
                 borderRadius,
                 overflow: "hidden",
-                backgroundColor: "#1a1a1a",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 25px 50px -12px rgba(0,0,0,0.6)",
+                backgroundColor: "#131316",
+                border: "1px solid rgba(255,255,255,0.06)",
+                boxShadow: "0 30px 60px -15px rgba(0,0,0,0.8)",
               }}>
                 {(card.src || card.placeholder) && (
                   card.src ? (
-                    <video
+                    <motion.video
                       src={card.src}
                       poster={card.placeholder}
                       autoPlay loop muted playsInline
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                      variants={{
+                        hover: { scale: 1.06, filter: "brightness(0.9) contrast(1.05)" },
+                        initial: { scale: 1, filter: "brightness(0.8) contrast(1)" }
+                      }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     />
                   ) : (
-                    <img
+                    <motion.img
                       src={card.placeholder}
                       alt={card.title || ""}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                      variants={{
+                        hover: { scale: 1.06, filter: "brightness(0.9) contrast(1.05)" },
+                        initial: { scale: 1, filter: "brightness(0.8) contrast(1)" }
+                      }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     />
                   )
                 )}
                 <div style={{ position: "absolute", inset: 0, background: overlayColor }} />
               </div>
               {showLabels && (
-                <div style={{ marginTop: "16px", paddingLeft: "4px" }}>
-                  <div style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "-0.01em", textTransform: "uppercase" }}>{card.title}</div>
-                  <div style={{ fontSize: "12px", opacity: 0.5, marginTop: "4px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>{card.category}</div>
+                <div style={{ marginTop: "20px", paddingLeft: "4px" }}>
+                  <motion.div 
+                    style={{ fontSize: "20px", fontWeight: 700, letterSpacing: "-0.02em", textTransform: "uppercase" }}
+                    variants={{
+                      hover: { x: 4, color: "#ffffff" },
+                      initial: { x: 0, color: "rgba(255,255,255,0.9)" }
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {card.title}
+                  </motion.div>
+                  <motion.div 
+                    style={{ fontSize: "11px", opacity: 0.5, marginTop: "6px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}
+                    variants={{
+                      hover: { x: 4 },
+                      initial: { x: 0 }
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {card.category}
+                  </motion.div>
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </div>
