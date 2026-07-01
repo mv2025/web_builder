@@ -237,7 +237,7 @@ export type ComponentType =
   // Utility
   | "divider" | "badge" | "card" | "icon"
   // Animated
-  | "horizontal-scroll" | "vertical-scroll-cards" | "text-zoom-scroll"
+  | "horizontal-scroll" | "vertical-scroll-cards" | "text-zoom-scroll" | "story-scroll" | "normal-story-carousel" | "text-reveal"
 
 export interface ComponentNode {
   id: string

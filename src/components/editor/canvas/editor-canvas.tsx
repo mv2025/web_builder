@@ -242,7 +242,7 @@ export function EditorCanvas() {
             boxSizing: "border-box",
             position: "relative",
             flexShrink: 0,
-            transform: previewMode ? "none" : `scale(${effectiveZoom})`,
+            transform: previewMode ? "none" : `scale(${viewport.zoom})`,
             transformOrigin: "top center",
             ...(showGrid && !previewMode
               ? {

@@ -41,7 +41,7 @@ export function HorizontalScrollBlock({
   overlayColor = "rgba(0,0,0,0.25)",
   scrollHeight = "2400px",
   viewportHeight = "100vh",
-  bgColor = "#08080a",
+  bgColor = "transparent",
   isPreview = false,
 }: HorizontalScrollBlockProps) {
   const targetRef = useRef<HTMLDivElement>(null)
@@ -123,7 +123,7 @@ export function HorizontalScrollBlock({
         height: scrollHeight,
         width: "100%",
         backgroundColor: bgColor,
-        color: "#ffffff",
+        color: "#0a0a0a",
       }}
     >
       <div style={{
@@ -167,9 +167,9 @@ export function HorizontalScrollBlock({
                 position: "relative",
                 borderRadius,
                 overflow: "hidden",
-                backgroundColor: "#131316",
-                border: "1px solid rgba(255,255,255,0.06)",
-                boxShadow: "0 30px 60px -15px rgba(0,0,0,0.8)",
+                backgroundColor: "#f5f5f5",
+                border: "1px solid rgba(0,0,0,0.06)",
+                boxShadow: "0 30px 60px -15px rgba(0,0,0,0.1)",
               }}>
                 {(card.src || card.placeholder) && (
                   card.src ? (
@@ -204,8 +204,8 @@ export function HorizontalScrollBlock({
                   <motion.div 
                     style={{ fontSize: "20px", fontWeight: 700, letterSpacing: "-0.02em", textTransform: "uppercase" }}
                     variants={{
-                      hover: { x: 4, color: "#ffffff" },
-                      initial: { x: 0, color: "rgba(255,255,255,0.9)" }
+                      hover: { x: 4, color: "#000000" },
+                      initial: { x: 0, color: "rgba(0,0,0,0.9)" }
                     }}
                     transition={{ duration: 0.3 }}
                   >

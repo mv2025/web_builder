@@ -15,37 +15,40 @@ import { useGSAPAnimation } from "@/hooks/use-gsap-animations";
 import { LucideIcon } from "@/lib/lucide-icon";
 
 // Component implementations
-import { HeroBlock } from "@/components/builder-components/marketing/hero-block";
-import { FeaturesBlock } from "@/components/builder-components/marketing/features-block";
-import { TestimonialsBlock } from "@/components/builder-components/marketing/testimonials-block";
-import { PricingBlock } from "@/components/builder-components/marketing/pricing-block";
-import { FAQBlock } from "@/components/builder-components/marketing/faq-block";
-import { StatisticsBlock } from "@/components/builder-components/marketing/statistics-block";
-import { CTASectionBlock } from "@/components/builder-components/marketing/cta-section-block";
-import { FooterBlock } from "@/components/builder-components/marketing/footer-block";
-import { HeadingBlock } from "@/components/builder-components/typography/heading-block";
-import { ParagraphBlock } from "@/components/builder-components/typography/paragraph-block";
-import { ButtonBlock } from "@/components/builder-components/layout/button-block";
-import { ImageBlock } from "@/components/builder-components/media/image-block";
-import { MarqueeBlock } from "@/components/builder-components/interactive/marquee-block";
-import { AccordionBlock } from "@/components/builder-components/interactive/accordion-block";
-import { ParticleSystemBlock } from "@/components/builder-components/three-d/particle-system-block";
-import { FloatingObjectsBlock } from "@/components/builder-components/three-d/floating-objects-block";
-import { InteractiveShapesBlock } from "@/components/builder-components/three-d/interactive-shapes-block";
-import { ThreeDHeroBlock } from "@/components/builder-components/three-d/three-d-hero-block";
-import { GlobeBlock } from "@/components/builder-components/three-d/globe-block";
-import { ProductShowcaseBlock } from "@/components/builder-components/three-d/product-showcase-block";
-import { GradientBlobBlock } from "@/components/builder-components/three-d/gradient-blob-block";
-import { WaveTerrainBlock } from "@/components/builder-components/three-d/wave-terrain-block";
-import { AuroraBlock } from "@/components/builder-components/three-d/aurora-block";
-import { MorphSphereBlock } from "@/components/builder-components/three-d/morph-sphere-block";
-import { GlassLayersBlock } from "@/components/builder-components/three-d/glass-layers-block";
-import { PerspectiveGridBlock } from "@/components/builder-components/three-d/perspective-grid-block";
-import { TubeRingBlock } from "@/components/builder-components/three-d/tube-ring-block";
-import { LightTrailsBlock } from "@/components/builder-components/three-d/light-trails-block";
-import { HorizontalScrollBlock } from "@/components/builder-components/animated/horizontal-scroll-block";
-import { VerticalScrollCardsBlock } from "@/components/builder-components/animated/vertical-scroll-cards-block";
-import { TextZoomScrollBlock } from "@/components/builder-components/animated/text-zoom-scroll-block";
+import { HeroBlock } from "@/components/builder-components/marketing/hero-block"
+import { FeaturesBlock } from "@/components/builder-components/marketing/features-block"
+import { TestimonialsBlock } from "@/components/builder-components/marketing/testimonials-block"
+import { PricingBlock } from "@/components/builder-components/marketing/pricing-block"
+import { FAQBlock } from "@/components/builder-components/marketing/faq-block"
+import { StatisticsBlock } from "@/components/builder-components/marketing/statistics-block"
+import { CTASectionBlock } from "@/components/builder-components/marketing/cta-section-block"
+import { FooterBlock } from "@/components/builder-components/marketing/footer-block"
+import { HeadingBlock } from "@/components/builder-components/typography/heading-block"
+import { ParagraphBlock } from "@/components/builder-components/typography/paragraph-block"
+import { ButtonBlock } from "@/components/builder-components/layout/button-block"
+import { ImageBlock } from "@/components/builder-components/media/image-block"
+import { MarqueeBlock } from "@/components/builder-components/interactive/marquee-block"
+import { AccordionBlock } from "@/components/builder-components/interactive/accordion-block"
+import { ParticleSystemBlock } from "@/components/builder-components/three-d/particle-system-block"
+import { FloatingObjectsBlock } from "@/components/builder-components/three-d/floating-objects-block"
+import { InteractiveShapesBlock } from "@/components/builder-components/three-d/interactive-shapes-block"
+import { ThreeDHeroBlock } from "@/components/builder-components/three-d/three-d-hero-block"
+import { GlobeBlock } from "@/components/builder-components/three-d/globe-block"
+import { ProductShowcaseBlock } from "@/components/builder-components/three-d/product-showcase-block"
+import { GradientBlobBlock } from "@/components/builder-components/three-d/gradient-blob-block"
+import { WaveTerrainBlock } from "@/components/builder-components/three-d/wave-terrain-block"
+import { AuroraBlock } from "@/components/builder-components/three-d/aurora-block"
+import { MorphSphereBlock } from "@/components/builder-components/three-d/morph-sphere-block"
+import { GlassLayersBlock } from "@/components/builder-components/three-d/glass-layers-block"
+import { PerspectiveGridBlock } from "@/components/builder-components/three-d/perspective-grid-block"
+import { TubeRingBlock } from "@/components/builder-components/three-d/tube-ring-block"
+import { LightTrailsBlock } from "@/components/builder-components/three-d/light-trails-block"
+import { HorizontalScrollBlock } from "@/components/builder-components/animated/horizontal-scroll-block"
+import { VerticalScrollCardsBlock } from "@/components/builder-components/animated/vertical-scroll-cards-block"
+import { TextZoomScrollBlock } from "@/components/builder-components/animated/text-zoom-scroll-block"
+import { StoryScrollBlock } from "@/components/builder-components/animated/story-scroll-block"
+import { NormalStoryCarouselBlock } from "@/components/builder-components/animated/normal-story-carousel-block"
+import { TextRevealBlock } from "@/components/builder-components/animated/text-reveal-block"
 import {
   SliderBlock,
   CarouselBlock,
@@ -2608,12 +2611,17 @@ function ComponentContent({
 
     // ── Animated ──────────────────────────────────────────────────────────────
     case "horizontal-scroll":
-      return <HorizontalScrollBlock {...props} isPreview={isPreview} />;
+      return <HorizontalScrollBlock {...props} isPreview={isPreview} />
     case "vertical-scroll-cards":
-      return <VerticalScrollCardsBlock {...props} isPreview={isPreview} />;
+      return <VerticalScrollCardsBlock {...props} isPreview={isPreview} />
     case "text-zoom-scroll":
-      return <TextZoomScrollBlock {...props} isPreview={isPreview} />;
-
+      return <TextZoomScrollBlock {...props} isPreview={isPreview} />
+    case "story-scroll":
+      return <StoryScrollBlock {...props} isPreview={isPreview} />
+    case "normal-story-carousel":
+      return <NormalStoryCarouselBlock {...props} isPreview={isPreview} />
+    case "text-reveal":
+      return <TextRevealBlock {...props} isPreview={isPreview} />
     default:
       return (
         <div

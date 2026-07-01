@@ -31,9 +31,9 @@ export function TextZoomScrollBlock({
   lines: linesProp,
   line1 = "BUILT TO", line2 = "ENTER", line3 = "LENIS FLOW",
   fontSize = "13vw",
-  bgColor = "#08080a",
-  textColor = "#ffffff",
-  revealBg = "#ffffff",
+  bgColor = "transparent",
+  textColor = "#0a0a0a",
+  revealBg = "transparent",
   revealTextColor = "#08080a",
   revealTitle = "Thank You.",
   revealSubtitle = "Project Sequence Terminal // Complete",
@@ -143,7 +143,7 @@ export function TextZoomScrollBlock({
           <div style={{
             width: "100%", display: "flex", justifyContent: "space-between",
             fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.15em",
-            color: "rgba(255,255,255,0.3)", textTransform: "uppercase",
+            color: "rgba(0,0,0,0.4)", textTransform: "uppercase",
           }}>
             <span>{headerLeft}</span>
             <span>{headerRight}</span>
@@ -180,7 +180,7 @@ export function TextZoomScrollBlock({
           <div style={{
             width: "100%", display: "flex", justifyContent: "space-between",
             fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.15em",
-            color: "rgba(255,255,255,0.3)", textTransform: "uppercase",
+            color: "rgba(0,0,0,0.4)", textTransform: "uppercase",
           }}>
             <span>{footerLeft}</span>
             <span>{footerRight}</span>

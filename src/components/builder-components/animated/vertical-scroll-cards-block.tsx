@@ -32,9 +32,9 @@ export function VerticalScrollCardsBlock({
     { title: "FLAWLESS KINETIC ALIGNMENT", description: "Synchronize your visual elements with scroll movement. Real-time translation coupled with custom easing curves creates a cinematic feeling that regular page jumps simply cannot replicate." },
     { title: "OPTIMIZE MOBILE PERFORMANCE", description: "Ensure a lightweight experience on touch-sensitive devices. High frame-rate transitions and fluid layout shifts keep your site performing beautifully across modern viewports and devices." },
   ],
-  scrollHeight = "2000px",
+  scrollHeight = "400vh",
   viewportHeight = "100vh",
-  bgColor = "#0a0a0a",
+  bgColor = "transparent",
   isPreview = false,
 }: VerticalScrollCardsBlockProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -84,7 +84,7 @@ export function VerticalScrollCardsBlock({
   const rightPanelY = useTransform(
     scrollYProgress,
     [0, 1],
-    ["0%", `-${(cards.length - 1) * 100}%`]
+    ["0vh", `-${(cards.length - 1) * 100}vh`]
   )
 
   return (
@@ -94,7 +94,7 @@ export function VerticalScrollCardsBlock({
         position: "relative",
         height: scrollHeight,
         backgroundColor: bgColor,
-        color: "#f5f5f5",
+        color: "#0a0a0a",
         width: "100%",
       }}
     >
@@ -183,7 +183,7 @@ export function VerticalScrollCardsBlock({
                   <p style={{
                     fontSize: "14px",
                     lineHeight: 1.7,
-                    color: "#a3a3a3",
+                    color: "#525252",
                     fontWeight: 400,
                   }}>
                     {card.description}
