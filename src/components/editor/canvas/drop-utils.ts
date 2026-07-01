@@ -151,7 +151,6 @@ export function highlightContainer(
   if (prevEl) {
     prevEl.style.outline = ""
     prevEl.style.outlineOffset = ""
-    prevEl.style.background = ""
   }
 
   if (!parentId) return null
@@ -160,7 +159,6 @@ export function highlightContainer(
   if (el) {
     el.style.outline = "2px dashed rgba(14, 165, 233, 0.6)"
     el.style.outlineOffset = "-2px"
-    el.style.background = "rgba(14, 165, 233, 0.04)"
     return el
   }
   return null
@@ -170,6 +168,5 @@ export function clearContainerHighlight(el: HTMLElement | null) {
   if (el) {
     el.style.outline = ""
     el.style.outlineOffset = ""
-    el.style.background = ""
   }
 }

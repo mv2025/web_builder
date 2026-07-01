@@ -206,10 +206,21 @@ export function stylePropsToCSS(
   important = false
 ): React.CSSProperties {
   const suffix = important ? " !important" : ""
-  const entries = Object.entries(styles).filter(([, v]) => v !== undefined && v !== "")
+  const CUSTOM_KEYS = new Set(["backgroundVideo", "imageBlur", "overlayColor"])
+  const entries = Object.entries(styles).filter(([k, v]) => v !== undefined && v !== "" && !CUSTOM_KEYS.has(k))
   const css: Record<string, string> = {}
   for (const [k, v] of entries) {
-    css[k] = `${v}${suffix}`
+    let val = `${v}`
+    if (k === "backgroundImage" && val && val !== "none") {
+      const isCSSFn = (s: string) => /^(url|linear-gradient|radial-gradient|conic-gradient|none)\s*\(/.test(s) || s === "none"
+      if (!isCSSFn(val)) {
+        val = `url(${val})`
+      }
+    }
+    if ((k === "backdropFilter" || k === "filter") && val && !val.includes("(")) {
+      val = `blur(${val}${/^\d+$/.test(val) ? "px" : ""})`
+    }
+    css[k] = `${val}${suffix}`
   }
   // Expand shorthands when individual properties are also present to avoid React warnings
   for (const [shorthand, longhands] of Object.entries(SHORTHAND_CONFLICTS)) {

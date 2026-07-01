@@ -135,8 +135,9 @@ export function AlignmentGuides({ canvasRef }: { canvasRef: React.RefObject<HTML
   const [dimLabel, setDimLabel] = useState<{ w: number; h: number; x: number; y: number } | null>(null)
   const rafRef = useRef(0)
   const isDraggingRef = useRef(false)
-  const { selection, viewport } = useEditorStore()
+  const { selection, viewport, canvasFitScale } = useEditorStore()
   const selectedId = selection.nodeIds[0]
+  const effectiveZoom = canvasFitScale * viewport.zoom
 
   const update = useCallback(() => {
     const canvas = canvasRef.current
@@ -146,7 +147,7 @@ export function AlignmentGuides({ canvasRef }: { canvasRef: React.RefObject<HTML
     if (!draggedEl) return
 
     const canvasRect = canvas.getBoundingClientRect()
-    const zoom = viewport.zoom
+    const zoom = effectiveZoom
     const pad = getCanvasPad(canvas)
 
     const dragged = domRectToLocal(draggedEl.getBoundingClientRect(), canvasRect, zoom, pad)
@@ -156,7 +157,7 @@ export function AlignmentGuides({ canvasRef }: { canvasRef: React.RefObject<HTML
     setGuides(result.guides)
     setDistances(result.distances)
     setDimLabel({ w: Math.round(dragged.width), h: Math.round(dragged.height), x: Math.round(dragged.left), y: Math.round(dragged.top) })
-  }, [canvasRef, selectedId, viewport.zoom])
+  }, [canvasRef, selectedId, effectiveZoom])
 
   useEffect(() => {
     if (!selectedId) {

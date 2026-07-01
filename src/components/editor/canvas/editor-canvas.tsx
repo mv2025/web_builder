@@ -12,8 +12,9 @@ import {
 } from "@/components/editor/canvas/drop-utils";
 import type { ComponentType, StyleProps } from "@/types";
 
-const DEVICE_WIDTHS = { desktop: "1440px", tablet: "768px", mobile: "390px" };
+const DEVICE_WIDTHS = { desktop: 1440, tablet: 768, mobile: 390 };
 const DEVICE_HEIGHTS = { desktop: "900px", tablet: "1024px", mobile: "844px" };
+const CANVAS_PADDING = 40;
 
 export function EditorCanvas() {
   const {
@@ -28,12 +29,15 @@ export function EditorCanvas() {
     previewMode,
     showGrid,
     setHoveredNode,
+    setCanvasFitScale,
   } = useEditorStore();
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRootRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const page = getActivePage();
   const [canvasMinHeight, setCanvasMinHeight] = useState<string>(DEVICE_HEIGHTS[breakpoint]);
+  const [availableWidth, setAvailableWidth] = useState<number>(0);
 
   const highlightedElRef = useRef<HTMLElement | null>(null);
 
@@ -57,6 +61,28 @@ export function EditorCanvas() {
     observer.observe(canvas, { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
     return () => observer.disconnect();
   }, [breakpoint, page?.components]);
+
+  // Track available width for auto-fit scaling
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setAvailableWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const deviceW = DEVICE_WIDTHS[breakpoint];
+  const totalNeeded = deviceW + CANVAS_PADDING * 2;
+  const fitScale = !previewMode && availableWidth > 0 && totalNeeded > availableWidth
+    ? (availableWidth - 16) / deviceW
+    : 1;
+  const effectiveZoom = previewMode ? 1 : fitScale * viewport.zoom;
+
+  useEffect(() => {
+    setCanvasFitScale(fitScale);
+  }, [fitScale, setCanvasFitScale]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -104,10 +130,9 @@ export function EditorCanvas() {
         ? (canvasEl.querySelector(`[data-node-id="${target.parentId}"]`) as HTMLElement)
         : canvasEl;
 
-      const zoom = viewport.zoom;
       const containerRect = containerEl.getBoundingClientRect();
-      const dropX = Math.round((e.clientX - containerRect.left) / zoom);
-      const dropY = Math.round((e.clientY - containerRect.top) / zoom);
+      const dropX = Math.round((e.clientX - containerRect.left) / effectiveZoom);
+      const dropY = Math.round((e.clientY - containerRect.top) / effectiveZoom);
 
       const node = createNode(type);
 
@@ -120,7 +145,7 @@ export function EditorCanvas() {
 
       addNode(node, target.parentId, target.index);
     },
-    [addNode, moveNode, viewport.zoom],
+    [addNode, moveNode, effectiveZoom],
   );
 
   const handleCanvasClick = useCallback(
@@ -137,9 +162,11 @@ export function EditorCanvas() {
 
   return (
     <div
+      ref={scrollContainerRef}
       data-canvas-scroll="true"
       style={{
         flex: 1,
+        minWidth: 0,
         overflow: "auto",
         position: "relative",
         background: previewMode ? "#fff" : "var(--editor-canvas)",
@@ -174,12 +201,11 @@ export function EditorCanvas() {
           <span>📄 {page?.name ?? "Page"}</span>
           <span style={{ color: "var(--fg-dim)" }}>/</span>
           <span style={{ color: "var(--fg-ghost)" }}>
-            {parseInt(DEVICE_WIDTHS[breakpoint])} ×{" "}
-            {parseInt(DEVICE_HEIGHTS[breakpoint])}px
+            {deviceW} × {parseInt(DEVICE_HEIGHTS[breakpoint])}px
           </span>
           <span style={{ color: "var(--fg-dim)" }}>•</span>
           <span style={{ color: "var(--fg-ghost)" }}>
-            {Math.round(viewport.zoom * 100)}%
+            {Math.round(effectiveZoom * 100)}%
           </span>
           {selection.nodeIds.length > 0 && (
             <>
@@ -196,10 +222,12 @@ export function EditorCanvas() {
       <div
         ref={canvasRef}
         style={{
-          padding: previewMode ? "0" : "40px 40px 120px",
+          padding: previewMode ? "0" : `${CANVAS_PADDING}px 8px 120px`,
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
+          width: "100%",
+          boxSizing: "border-box",
         }}
       >
         <div
@@ -207,14 +235,14 @@ export function EditorCanvas() {
           data-canvas-root="true"
           data-breakpoint={breakpoint}
           style={{
-            width: DEVICE_WIDTHS[breakpoint],
+            width: `${deviceW}px`,
             minHeight: canvasMinHeight,
             padding: previewMode ? "0" : "16px",
             background: "var(--canvas-node-bg)",
             boxSizing: "border-box",
             position: "relative",
             flexShrink: 0,
-            transform: previewMode ? "none" : `scale(${viewport.zoom})`,
+            transform: previewMode ? "none" : `scale(${effectiveZoom})`,
             transformOrigin: "top center",
             ...(showGrid && !previewMode
               ? {
@@ -228,7 +256,7 @@ export function EditorCanvas() {
               : breakpoint === "mobile"
                 ? "16px"
                 : "0",
-            transition: "width 0.3s ease",
+            transition: "width 0.3s ease, transform 0.2s ease",
           }}
           onMouseLeave={() => setHoveredNode(null)}
         >

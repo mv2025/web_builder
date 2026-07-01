@@ -45,7 +45,8 @@ const ACTION_BTN: React.CSSProperties = {
 }
 
 export function SelectionOverlay({ nodeId, nodeRef, breakpoint }: SelectionOverlayProps) {
-  const { updateNodeStyles, viewport, removeNode, toggleNodeLock, getActivePage, copyNodes, duplicateNode } = useEditorStore()
+  const { updateNodeStyles, viewport, canvasFitScale, removeNode, toggleNodeLock, getActivePage, copyNodes, duplicateNode } = useEditorStore()
+  const effectiveZoom = canvasFitScale * viewport.zoom
 
   const page = getActivePage()
   const node = page ? findNodeById(page.components, nodeId) : null
@@ -72,7 +73,7 @@ export function SelectionOverlay({ nodeId, nodeRef, breakpoint }: SelectionOverl
     if (!el) return
 
     const rect = el.getBoundingClientRect()
-    const zoom = viewport.zoom
+    const zoom = effectiveZoom
 
     dragState.current = {
       type: "resize",
@@ -142,7 +143,7 @@ export function SelectionOverlay({ nodeId, nodeRef, breakpoint }: SelectionOverl
     document.body.style.userSelect = "none"
     document.addEventListener("mousemove", onMouseMove)
     document.addEventListener("mouseup", onMouseUp)
-  }, [nodeRef, nodeId, breakpoint, updateNodeStyles, viewport.zoom])
+  }, [nodeRef, nodeId, breakpoint, updateNodeStyles, effectiveZoom])
 
   const startDrag = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return
@@ -151,7 +152,7 @@ export function SelectionOverlay({ nodeId, nodeRef, breakpoint }: SelectionOverl
     const el = nodeRef.current
     if (!el) return
 
-    const zoom = viewport.zoom
+    const zoom = effectiveZoom
     let highlightedEl: HTMLElement | null = null
 
     // Capture the element's current visual position relative to its parent
@@ -227,7 +228,7 @@ export function SelectionOverlay({ nodeId, nodeRef, breakpoint }: SelectionOverl
     document.body.style.userSelect = "none"
     document.addEventListener("mousemove", onMouseMove)
     document.addEventListener("mouseup", onMouseUp)
-  }, [nodeRef, nodeId, breakpoint, updateNodeStyles, viewport.zoom])
+  }, [nodeRef, nodeId, breakpoint, updateNodeStyles, effectiveZoom])
 
   useEffect(() => {
     const el = nodeRef.current

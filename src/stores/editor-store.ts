@@ -64,6 +64,8 @@ interface EditorState {
   moveNode: (id: string, newParentId: string | null, index: number) => void
 
   // Actions — Viewport
+  canvasFitScale: number
+  setCanvasFitScale: (scale: number) => void
   setZoom: (zoom: number) => void
   setPan: (x: number, y: number) => void
   setBreakpoint: (bp: Breakpoint) => void
@@ -124,6 +126,7 @@ export const useEditorStore = create<EditorState>()(
       selection: { nodeIds: [], pageId: null },
       hoveredNodeId: null,
       viewport: { zoom: 1, panX: 0, panY: 0 },
+      canvasFitScale: 1,
       breakpoint: "desktop",
       previewMode: false,
       leftPanelTab: "components",
@@ -364,6 +367,7 @@ export const useEditorStore = create<EditorState>()(
 
       // ── Viewport ──────────────────────────────────────────────────────────
 
+      setCanvasFitScale: (scale) => set((s) => { s.canvasFitScale = scale }),
       setZoom: (zoom) => set((s) => { s.viewport.zoom = Math.max(0.1, Math.min(3, zoom)) }),
       setPan: (x, y) => set((s) => { s.viewport.panX = x; s.viewport.panY = y }),
       setBreakpoint: (bp) => set((s) => { s.breakpoint = bp }),

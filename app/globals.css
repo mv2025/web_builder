@@ -201,9 +201,16 @@
 
 /* ─── Panel sizes ─────────────────────────────────────────────────────────── */
 :root {
-  --panel-width-left: 260px;
-  --panel-width-right: 280px;
+  --panel-width-left: 240px;
+  --panel-width-right: 260px;
   --toolbar-height: 48px;
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --panel-width-left: 260px;
+    --panel-width-right: 280px;
+  }
 }
 
 /* ─── Base resets ──────────────────────────────────────────────────────────── */

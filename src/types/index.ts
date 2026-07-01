@@ -146,6 +146,12 @@ export interface StyleProps {
   backgroundRepeat?: string
   backgroundClip?: string
   backgroundBlendMode?: string
+  backgroundAttachment?: string
+  backgroundOrigin?: string
+  // Custom (not real CSS — used by section bg-layer rendering)
+  backgroundVideo?: string
+  imageBlur?: string
+  overlayColor?: string
 
   // Border
   borderWidth?: string
