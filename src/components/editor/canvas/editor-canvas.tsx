@@ -24,6 +24,7 @@ export function EditorCanvas() {
     deselectAll,
     addNode,
     moveNode,
+    updateNodeStyles,
     viewport,
     breakpoint,
     previewMode,
@@ -117,15 +118,7 @@ export function EditorCanvas() {
       const type = e.dataTransfer.getData("component-type") as ComponentType;
       const movingNodeId = e.dataTransfer.getData("move-node-id");
 
-      if (movingNodeId) {
-        const target = findDropTarget(e.clientX, e.clientY, canvasEl, movingNodeId);
-        moveNode(movingNodeId, target.parentId, target.index);
-        return;
-      }
-
-      if (!type) return;
-
-      const target = findDropTarget(e.clientX, e.clientY, canvasEl);
+      const target = findDropTarget(e.clientX, e.clientY, canvasEl, movingNodeId || undefined);
       const containerEl = target.parentId
         ? (canvasEl.querySelector(`[data-node-id="${target.parentId}"]`) as HTMLElement)
         : canvasEl;
@@ -134,26 +127,56 @@ export function EditorCanvas() {
       const dropX = Math.round((e.clientX - containerRect.left) / effectiveZoom);
       const dropY = Math.round((e.clientY - containerRect.top) / effectiveZoom);
 
+      if (movingNodeId) {
+        moveNode(movingNodeId, target.parentId, target.index);
+        
+        // Freeform placement: Automatically make absolute if dropped on root
+        if (!target.parentId) {
+          updateNodeStyles(
+            movingNodeId,
+            {
+              position: "absolute",
+              top: `${dropY}px`,
+              left: `${dropX}px`,
+              marginLeft: "0",
+              marginRight: "0",
+              marginTop: "0",
+              marginBottom: "0",
+            },
+            breakpoint
+          );
+        }
+        return;
+      }
+
+      if (!type) return;
+
       const node = createNode(type);
 
-      // Waves are decorative and default to width: 100%. If we also set
-      // left: dropX (px), width: 100% starts from that offset and overflows
-      // the container. So drop waves at their default (bottom-anchored, left: 0);
-      // the user can drag them freely afterwards. Non-wave components take the
-      // cursor position as usual.
+      // Freeform placement: Automatically make absolute if dropped on root
       const isWave = /^wave-\d+$/.test(type);
-      if (!isWave) {
+      if (!isWave && (!target.parentId || node.styles.desktop?.position === "absolute")) {
+        let finalDropX = dropX;
+        if (node.styles.desktop?.width === "100%") {
+          node.styles.desktop.width = "400px";
+          finalDropX = Math.max(0, dropX - 200);
+        }
+        
         node.styles.desktop = {
           ...(node.styles.desktop as StyleProps),
           position: "absolute",
           top: `${dropY}px`,
-          left: `${dropX}px`,
+          left: `${finalDropX}px`,
+          marginLeft: "0",
+          marginRight: "0",
+          marginTop: "0",
+          marginBottom: "0",
         } as StyleProps;
       }
 
       addNode(node, target.parentId, target.index);
     },
-    [addNode, moveNode, effectiveZoom],
+    [addNode, moveNode, updateNodeStyles, effectiveZoom, breakpoint],
   );
 
   const handleCanvasClick = useCallback(

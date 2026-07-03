@@ -152,7 +152,6 @@ export const useEditorStore = create<EditorState>()(
           const cleanNodes = (nodes: ComponentNode[]): ComponentNode[] => {
             return nodes.map(node => {
               const defaultNode = createNode(node.type);
-              const isDefaultAbsolute = defaultNode.styles?.desktop?.position === "absolute";
               const cleaned = { 
                 ...node,
                 styles: node.styles ? {
@@ -161,23 +160,6 @@ export const useEditorStore = create<EditorState>()(
                   mobile: node.styles.mobile ? { ...node.styles.mobile } : ({} as StyleProps),
                 } : { desktop: {} as StyleProps }
               };
-              if (!isDefaultAbsolute && cleaned.styles) {
-                if (cleaned.styles.desktop) {
-                  delete cleaned.styles.desktop.position;
-                  delete cleaned.styles.desktop.top;
-                  delete cleaned.styles.desktop.left;
-                }
-                if (cleaned.styles.tablet) {
-                  delete cleaned.styles.tablet.position;
-                  delete cleaned.styles.tablet.top;
-                  delete cleaned.styles.tablet.left;
-                }
-                if (cleaned.styles.mobile) {
-                  delete cleaned.styles.mobile.position;
-                  delete cleaned.styles.mobile.top;
-                  delete cleaned.styles.mobile.left;
-                }
-              }
               if (cleaned.children && cleaned.children.length > 0) {
                 cleaned.children = cleanNodes(cleaned.children as ComponentNode[]);
               }

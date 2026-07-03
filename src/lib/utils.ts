@@ -254,9 +254,14 @@ export function cloneNode(node: ComponentNode): ComponentNode {
   const reassignIds = (n: ComponentNode): ComponentNode => {
     const result = { ...n, id: generateId(), children: n.children.map(reassignIds) }
     if (result.styles?.desktop) {
-      // Strip positioning, height, and transform so clones auto-size and don't overlap
-      const { height, minHeight, transform, marginLeft, marginTop, ...rest } = result.styles.desktop as Record<string, unknown>
-      result.styles = { ...result.styles, desktop: rest as typeof result.styles.desktop }
+      const desktop = { ...result.styles.desktop } as Record<string, unknown>
+      if (desktop.position === "absolute" && typeof desktop.top === "string" && typeof desktop.left === "string") {
+        const top = parseInt(desktop.top) || 0
+        const left = parseInt(desktop.left) || 0
+        desktop.top = `${top + 20}px`
+        desktop.left = `${left + 20}px`
+      }
+      result.styles = { ...result.styles, desktop: desktop as typeof result.styles.desktop }
     }
     return result
   }
