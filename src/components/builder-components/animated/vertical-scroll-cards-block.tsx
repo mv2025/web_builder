@@ -19,6 +19,7 @@ interface VerticalScrollCardsBlockProps {
   viewportHeight?: string
   bgColor?: string
   isPreview?: boolean
+  breakpoint?: string
   [key: string]: unknown
 }
 
@@ -36,6 +37,7 @@ export function VerticalScrollCardsBlock({
   viewportHeight = "100vh",
   bgColor = "transparent",
   isPreview = false,
+  breakpoint = "desktop",
 }: VerticalScrollCardsBlockProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null)
@@ -53,7 +55,7 @@ export function VerticalScrollCardsBlock({
       setScrollContainer(document.documentElement)
     }
 
-    if (isPreview) {
+    if (isPreview && breakpoint !== "mobile") {
       const wrapper = canvas || undefined
       const lenis = new Lenis({
         wrapper,
@@ -73,7 +75,7 @@ export function VerticalScrollCardsBlock({
         cancelAnimationFrame(rafId)
       }
     }
-  }, [isPreview])
+  }, [isPreview, breakpoint])
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -86,6 +88,76 @@ export function VerticalScrollCardsBlock({
     [0, 1],
     ["0vh", `-${(cards.length - 1) * 100}vh`]
   )
+
+  const isMobile = breakpoint === "mobile";
+
+  if (isMobile) {
+    return (
+      <div
+        ref={containerRef}
+        style={{
+          position: "relative",
+          height: "auto",
+          backgroundColor: bgColor,
+          color: "#0a0a0a",
+          width: "100%",
+          padding: "60px 24px",
+          boxSizing: "border-box",
+        }}
+      >
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(circle at 50% 30%, ${accentColor}10 0%, transparent 60%)` }} />
+        
+        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", gap: "40px" }}>
+          {/* Heading on top */}
+          <div style={{ display: "flex", alignItems: "stretch", gap: "16px" }}>
+            <div style={{
+              width: accentWidth,
+              background: accentColor,
+              borderRadius: "4px",
+              flexShrink: 0,
+            }} />
+            <h2 style={{
+              fontSize: "clamp(18px, 5.8vw, 26px)",
+              fontWeight: 900,
+              lineHeight: 1,
+              letterSpacing: "-0.04em",
+              textTransform: "uppercase",
+              whiteSpace: "nowrap",
+            }}>
+              {heading.replace(/\n/g, " ")}
+            </h2>
+          </div>
+
+          {/* Cards stacked vertically */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "36px" }}>
+            {cards.map((card, i) => (
+              <div key={i} style={{ display: "flex", flexDirection: "column" }}>
+                <h3 style={{
+                  fontSize: "20px",
+                  fontWeight: 900,
+                  color: accentColor,
+                  letterSpacing: "-0.03em",
+                  textTransform: "uppercase",
+                  lineHeight: 1.1,
+                  marginBottom: "8px",
+                }}>
+                  {card.title}
+                </h3>
+                <p style={{
+                  fontSize: "14px",
+                  lineHeight: 1.6,
+                  color: "#525252",
+                  fontWeight: 400,
+                }}>
+                  {card.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

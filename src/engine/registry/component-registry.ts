@@ -763,6 +763,21 @@ const registry: Record<ComponentType, ComponentMeta> = {
   },
 
   // ── Animated ────────────────────────────────────────────────────────────────
+  "volumetric-hero": {
+    type: "volumetric-hero", label: "Volumetric Hero", icon: "box", category: "Animated",
+    defaultProps: {
+      headline: "Design in a new dimension.",
+      description: "Physically accurate lighting. Rendered live. Zero shaders.",
+      button1Text: "Get Started",
+      button1Link: "#",
+      button2Text: "View Docs",
+      button2Link: "#",
+      lightColor: "#e6f0ff",
+      bgColor: "#000000"
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%", height: "100vh" },
+  },
   "horizontal-scroll": {
     type: "horizontal-scroll", label: "Horizontal Scroll", icon: "arrow-right-left", category: "Animated",
     defaultProps: {

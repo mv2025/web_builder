@@ -245,12 +245,12 @@ export function EditorCanvas() {
           style={{
             width: `${deviceW}px`,
             minHeight: canvasMinHeight,
-            padding: previewMode ? "0" : "16px",
+            padding: "0",
             background: "var(--canvas-node-bg)",
             boxSizing: "border-box",
             position: "relative",
             flexShrink: 0,
-            transform: previewMode ? "none" : `scale(${effectiveZoom})`,
+            transform: previewMode ? "none" : `scale(${viewport.zoom})`,
             transformOrigin: "top center",
             ...(showGrid && !previewMode
               ? {

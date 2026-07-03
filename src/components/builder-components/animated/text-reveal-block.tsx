@@ -65,7 +65,6 @@ export function TextRevealBlock({
   })
 
   const words = text.split(" ")
-
   // Breakpoint-driven typography and padding — Tailwind's `sm:` / `md:`
   // media queries fire against the browser viewport, not the editor's
   // simulated canvas, so headings stayed huge on mobile. Fixed sizes per
@@ -106,7 +105,6 @@ export function TextRevealBlock({
             // Complete the entire reveal by 90% of the sticky duration so it finishes cleanly
             const start = (i / words.length) * 0.9
             const end = ((i + 1) / words.length) * 0.9
-
             return (
               <Word
                 key={i}

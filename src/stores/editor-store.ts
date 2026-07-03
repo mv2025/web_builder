@@ -147,7 +147,50 @@ export const useEditorStore = create<EditorState>()(
         const { project, activePageId } = get()
         if (!project) return null
         const id = activePageId ?? project.pages[0]?.id
-        return project.pages.find((p) => p.id === id) ?? null
+        const page = project.pages.find((p) => p.id === id) ?? null
+        if (page && page.components) {
+          const cleanNodes = (nodes: ComponentNode[]): ComponentNode[] => {
+            return nodes.map(node => {
+              const defaultNode = createNode(node.type);
+              const isDefaultAbsolute = defaultNode.styles?.desktop?.position === "absolute";
+              const cleaned = { 
+                ...node,
+                styles: node.styles ? {
+                  desktop: node.styles.desktop ? { ...node.styles.desktop } : ({} as StyleProps),
+                  tablet: node.styles.tablet ? { ...node.styles.tablet } : ({} as StyleProps),
+                  mobile: node.styles.mobile ? { ...node.styles.mobile } : ({} as StyleProps),
+                } : { desktop: {} as StyleProps }
+              };
+              if (!isDefaultAbsolute && cleaned.styles) {
+                if (cleaned.styles.desktop) {
+                  delete cleaned.styles.desktop.position;
+                  delete cleaned.styles.desktop.top;
+                  delete cleaned.styles.desktop.left;
+                }
+                if (cleaned.styles.tablet) {
+                  delete cleaned.styles.tablet.position;
+                  delete cleaned.styles.tablet.top;
+                  delete cleaned.styles.tablet.left;
+                }
+                if (cleaned.styles.mobile) {
+                  delete cleaned.styles.mobile.position;
+                  delete cleaned.styles.mobile.top;
+                  delete cleaned.styles.mobile.left;
+                }
+              }
+              if (cleaned.children && cleaned.children.length > 0) {
+                cleaned.children = cleanNodes(cleaned.children as ComponentNode[]);
+              }
+              return cleaned;
+            });
+          };
+          const cleanedComponents = cleanNodes(page.components as ComponentNode[]);
+          return {
+            ...page,
+            components: cleanedComponents,
+          };
+        }
+        return page
       },
 
       updatePageMeta: (pageId, meta) => set((s) => {

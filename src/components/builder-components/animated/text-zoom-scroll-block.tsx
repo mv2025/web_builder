@@ -33,8 +33,6 @@ export function TextZoomScrollBlock({
   fontSize = "13vw",
   bgColor = "transparent",
   textColor = "#0a0a0a",
-  revealBg = "transparent",
-  revealTextColor = "#08080a",
   revealTitle = "Thank You.",
   revealSubtitle = "Project Sequence Terminal // Complete",
   revealDescription = "The core architecture handles all constraints smoothly. Your multi-section parallax system is now complete, fully responsive, and performance optimized.",
@@ -45,6 +43,7 @@ export function TextZoomScrollBlock({
   scrollHeight = "4000px",
   viewportHeight = "100vh",
   isPreview = false,
+  breakpoint = "desktop",
 }: TextZoomScrollBlockProps) {
   const lines = linesProp ?? [line1, line2, line3].filter(Boolean)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -85,28 +84,47 @@ export function TextZoomScrollBlock({
     }
   }, [isPreview])
 
+  const isMobile = breakpoint === "mobile"
+  const isTablet = breakpoint === "tablet"
+  const responsiveFontSize = fontSize === "13vw"
+    ? (isMobile ? "2.2rem" : isTablet ? "4.5rem" : "7rem")
+    : fontSize
+
+  const computedBgColor = bgColor === "transparent" ? "#ffffff" : bgColor
+  const computedTextColor = textColor === "transparent" ? "#0a0a0a" : textColor
+  const revealBg = computedTextColor
+  const revealTextColor = computedBgColor
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     container: scrollContainer ? scrollContainerRef : undefined,
+    offset: ["start start", "end end"],
   })
 
-  // Highly dramatic exponential zoom feel
-  const textScale = useTransform(scrollYProgress, [0, 0.35, 0.50, 0.65], [1, 12, 120, 480])
-  const textX = useTransform(scrollYProgress, [0, 0.30, 0.48, 0.65], ["0vw", "-15vw", "-60vw", "-120vw"])
-  const textY = useTransform(scrollYProgress, [0, 0.35, 0.50, 0.65], ["0vh", "2vh", "10vh", "25vh"])
-  const mainOpacity = useTransform(scrollYProgress, [0.55, 0.62], [1, 0])
-  
-  // Smoothly reveal content behind
-  const revealOpacity = useTransform(scrollYProgress, [0.52, 0.62, 1.00], [0, 1, 1])
-  const revealScale = useTransform(scrollYProgress, [0.52, 0.65, 1.00], [0.94, 1, 1])
-  const containerBgColor = useTransform(scrollYProgress, [0.55, 0.62], [bgColor, revealBg])
+  // Unconditional React hook calls to satisfy the Rules of Hooks
+  const scrollScale = useTransform(scrollYProgress, [0, 0.35, 0.50, 0.65], [1, 12, 120, 480])
+  const scrollX = useTransform(scrollYProgress, [0, 0.30, 0.48, 0.65], ["0vw", "0vw", "0vw", "0vw"])
+  const scrollY = useTransform(scrollYProgress, [0, 0.35, 0.50, 0.65], ["0vh", "0vh", "0vh", "0vh"])
+  const scrollMainOpacity = useTransform(scrollYProgress, [0.55, 0.62], [1, 0])
+  const scrollRevealOpacity = useTransform(scrollYProgress, [0.52, 0.62, 1.00], [0, 1, 1])
+  const scrollRevealScale = useTransform(scrollYProgress, [0.52, 0.65, 1.00], [0.94, 1, 1])
+  const scrollBgColor = useTransform(scrollYProgress, [0.55, 0.62], [computedBgColor, revealBg])
+
+  // Select layout values conditionally based on editor preview state
+  const textScale = isPreview ? scrollScale : 1
+  const textX = isPreview ? scrollX : "0vw"
+  const textY = isPreview ? scrollY : "0vh"
+  const mainOpacity = isPreview ? scrollMainOpacity : 1
+  const revealOpacity = isPreview ? scrollRevealOpacity : 0
+  const revealScale = isPreview ? scrollRevealScale : 0.94
+  const containerBgColor = isPreview ? scrollBgColor : computedBgColor
 
   return (
     <div
       ref={containerRef}
       style={{
         position: "relative",
-        height: scrollHeight,
+        height: isPreview ? scrollHeight : "auto", // Auto height in editor so it doesn't leave massive blanks
         backgroundColor: bgColor,
         color: textColor,
         width: "100%",
@@ -115,42 +133,56 @@ export function TextZoomScrollBlock({
       <motion.div
         style={{
           backgroundColor: containerBgColor,
-          position: "sticky",
+          position: isPreview ? "sticky" : "relative", // Relative in editor to avoid stacking issues
           top: 0,
-          height: viewportHeight,
+          height: isPreview ? viewportHeight : "auto",
+          minHeight: isPreview ? "auto" : "400px",
           width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
           isolation: "isolate",
+          padding: isMobile ? "40px 0" : "0",
         }}
       >
         {/* Monospaced HUD background elements */}
         <motion.div
           style={{
             opacity: mainOpacity,
-            position: "absolute",
-            inset: 0,
+            position: isPreview ? "absolute" : "relative",
+            inset: isPreview ? 0 : "auto",
+            width: "100%",
+            height: isPreview ? "100%" : "auto",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            padding: "32px",
+            padding: isMobile ? "16px" : "32px",
             pointerEvents: "none",
             zIndex: 20,
           }}
         >
           <div style={{
             width: "100%", display: "flex", justifyContent: "space-between",
-            fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.15em",
+            fontFamily: "monospace", fontSize: isMobile ? "9px" : "11px", letterSpacing: "0.15em",
             color: "rgba(0,0,0,0.4)", textTransform: "uppercase",
+            marginBottom: isPreview ? "0" : "24px",
+            gap: "12px",
           }}>
             <span>{headerLeft}</span>
             <span>{headerRight}</span>
           </div>
 
           {/* Central Zooming Text Wrapper */}
-          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", perspective: "1200px" }}>
+          <div style={{
+            position: isPreview ? "absolute" : "relative",
+            inset: isPreview ? 0 : "auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            perspective: "1200px",
+            margin: isPreview ? "0" : "24px 0",
+          }}>
             <motion.div
               style={{
                 scale: textScale,
@@ -172,15 +204,17 @@ export function TextZoomScrollBlock({
               }}
             >
               {lines.map((line, i) => (
-                <span key={i} style={{ fontSize, display: "block", color: textColor }}>{line}</span>
+                <span key={i} style={{ fontSize: responsiveFontSize, display: "block", color: textColor }}>{line}</span>
               ))}
             </motion.div>
           </div>
 
           <div style={{
             width: "100%", display: "flex", justifyContent: "space-between",
-            fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.15em",
+            fontFamily: "monospace", fontSize: isMobile ? "9px" : "11px", letterSpacing: "0.15em",
             color: "rgba(0,0,0,0.4)", textTransform: "uppercase",
+            marginTop: isPreview ? "0" : "24px",
+            gap: "12px",
           }}>
             <span>{footerLeft}</span>
             <span>{footerRight}</span>
@@ -198,7 +232,7 @@ export function TextZoomScrollBlock({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: "48px",
+            padding: isMobile ? "24px" : "48px",
             textAlign: "center",
             backgroundColor: revealBg,
             color: revealTextColor,
@@ -212,8 +246,11 @@ export function TextZoomScrollBlock({
             {revealSubtitle}
           </span>
           <h3 style={{
-            fontSize: "clamp(48px, 9vw, 120px)", fontWeight: 900,
-            letterSpacing: "-0.04em", textTransform: "uppercase", lineHeight: 0.95,
+            fontSize: isMobile ? "4.2rem" : "clamp(40px, 6vw, 90px)",
+            fontWeight: 900,
+            letterSpacing: "-0.04em",
+            textTransform: "uppercase",
+            lineHeight: 0.95,
           }}>
             {revealTitle}
           </h3>

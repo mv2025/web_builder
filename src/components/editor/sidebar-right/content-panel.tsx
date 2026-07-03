@@ -91,6 +91,11 @@ export function ContentPanel({ node }: ContentPanelProps) {
       "team",
       "bento-grid",
       "footer",
+      "horizontal-scroll",
+      "vertical-scroll-cards",
+      "story-scroll",
+      "normal-story-carousel",
+      "volumetric-light",
     ].includes(node.type)
   ) {
     return (
@@ -4888,6 +4893,57 @@ function getListConfig(type: string): ListFieldConfig | null {
           { key: "description", label: "Description", type: "textarea" },
         ],
       };
+    case "story-scroll":
+      return {
+        key: "promises",
+        label: "Story Promises",
+        itemLabel: "Promise",
+        nameField: "title",
+        fields: [
+          { key: "num", label: "Number (e.g. 01)", type: "text" },
+          { key: "subtitle", label: "Subtitle", type: "text" },
+          { key: "title", label: "Title", type: "text" },
+          { key: "desc", label: "Description", type: "textarea" },
+          { key: "glowColor", label: "Glow Color (rgba)", type: "text" },
+        ],
+        extraFields: [
+          { key: "heading", label: "Heading", type: "textarea" },
+          { key: "subheading", label: "Subheading", type: "text" },
+        ]
+      };
+    case "normal-story-carousel":
+      return {
+        key: "items",
+        label: "Carousel Items",
+        itemLabel: "Item",
+        nameField: "title",
+        fields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "category", label: "Category", type: "text" },
+          { key: "image", label: "Image URL", type: "url" },
+        ],
+        extraFields: [
+          { key: "heading", label: "Heading", type: "text" },
+        ]
+      };
+    case "volumetric-light":
+      return {
+        key: "stats",
+        label: "Stats Items",
+        itemLabel: "Stat",
+        nameField: "label",
+        fields: [
+          { key: "label", label: "Label", type: "text" },
+          { key: "to", label: "Number Value", type: "number" },
+          { key: "suffix", label: "Suffix (e.g. %, fps)", type: "text" },
+        ],
+        extraFields: [
+          { key: "bgColor", label: "Background Color", type: "color" },
+          { key: "lightColor", label: "Light Color", type: "color" },
+          { key: "label", label: "Main Label Text", type: "text" },
+          { key: "minHeight", label: "Min Height", type: "text" },
+        ]
+      };
     default:
       return null;
   }
@@ -5667,6 +5723,17 @@ function getContentFields(
   props: Record<string, unknown>,
 ): ContentFieldDef[] {
   switch (type) {
+    case "volumetric-hero":
+      return [
+        { key: "bgColor", label: "Background Color", type: "color" },
+        { key: "lightColor", label: "Light Color", type: "color" },
+        { key: "headline", label: "Headline Text", type: "textarea" },
+        { key: "description", label: "Description Paragraph", type: "textarea" },
+        { key: "button1Text", label: "Primary Button Text", type: "text" },
+        { key: "button1Link", label: "Primary Button Link", type: "text" },
+        { key: "button2Text", label: "Secondary Button Text", type: "text" },
+        { key: "button2Link", label: "Secondary Button Link", type: "text" },
+      ];
     case "hero":
       return [
         {
@@ -7871,8 +7938,6 @@ function getContentFields(
         { key: "fontSize", label: "Font Size", type: "text" },
         { key: "bgColor", label: "Background", type: "color" },
         { key: "textColor", label: "Text Color", type: "color" },
-        { key: "revealBg", label: "Reveal Background", type: "color" },
-        { key: "revealTextColor", label: "Reveal Text Color", type: "color" },
         { key: "revealTitle", label: "Reveal Title", type: "text" },
         { key: "revealSubtitle", label: "Reveal Subtitle", type: "text" },
         { key: "revealDescription", label: "Reveal Description", type: "textarea" },
@@ -7882,6 +7947,11 @@ function getContentFields(
         { key: "footerRight", label: "Footer Right", type: "text" },
         { key: "viewportHeight", label: "Viewport Height", type: "text" },
         { key: "scrollHeight", label: "Scroll Height", type: "text" },
+      ];
+    case "text-reveal":
+      return [
+        { key: "text", label: "Reveal Text", type: "textarea" },
+        { key: "scrollHeight", label: "Scroll Height (e.g. 150vh)", type: "text" },
       ];
 
     case "wave-1":

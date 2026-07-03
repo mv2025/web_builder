@@ -49,6 +49,8 @@ import { TextZoomScrollBlock } from "@/components/builder-components/animated/te
 import { StoryScrollBlock } from "@/components/builder-components/animated/story-scroll-block"
 import { NormalStoryCarouselBlock } from "@/components/builder-components/animated/normal-story-carousel-block"
 import { TextRevealBlock } from "@/components/builder-components/animated/text-reveal-block"
+import { VolumetricLightBlock } from "@/components/builder-components/animated/volumetric-light-block"
+import VolumetricHeroSection from "@/components/builder-components/animated/VolumetricHeroSection"
 import { WaveBlock } from "@/components/builder-components/waves/wave-block"
 import {
   SliderBlock,
@@ -99,6 +101,7 @@ const ANIMATED_SCROLL_TYPES = new Set([
   "horizontal-scroll",
   "vertical-scroll-cards",
   "text-zoom-scroll",
+  "volumetric-hero",
 ]);
 
 // Decorative background waves — must stay absolutely positioned with a fixed
@@ -2667,6 +2670,8 @@ function ComponentContent({
     }
 
     // ── Animated ──────────────────────────────────────────────────────────────
+    case "volumetric-hero":
+      return <VolumetricHeroSection {...props} breakpoint={breakpoint} />
     case "horizontal-scroll":
       return <HorizontalScrollBlock {...props} isPreview={isPreview} />
     case "vertical-scroll-cards":
