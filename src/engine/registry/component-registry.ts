@@ -191,7 +191,7 @@ const registry: Record<ComponentType, ComponentMeta> = {
         { name: "Vercel" }, { name: "Stripe" }, { name: "Linear" }, { name: "Notion" },
         { name: "Figma" }, { name: "GitHub" }, { name: "Slack" }, { name: "Shopify" },
       ],
-      speed: 30, direction: "left", pauseOnHover: true, logoHeight: "28px", gap: "64px", grayscale: true,
+      speed: 30, direction: "left", pauseOnHover: true, logoHeight: "28px", gap: "64px", grayscale: false,
     },
     canHaveChildren: false, draggable: true, droppable: false, resizable: true,
     defaultStyles: { paddingTop: "48px", paddingBottom: "48px", width: "100%", overflow: "hidden" },

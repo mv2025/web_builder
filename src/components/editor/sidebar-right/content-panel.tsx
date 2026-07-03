@@ -16,6 +16,78 @@ import {
   X,
 } from "lucide-react";
 import { LucideIcon, ICON_CATEGORIES, ALL_ICON_NAMES } from "@/lib/lucide-icon";
+import { Upload } from "lucide-react";
+
+function ImageUploadField({
+  value,
+  onChange,
+  label,
+  inputStyle,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  label?: string;
+  inputStyle: React.CSSProperties;
+}) {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") onChange(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  return (
+    <div>
+      {label && (
+        <label style={{ fontSize: "11px", color: "var(--fg-faint)", display: "block", marginBottom: "3px" }}>
+          {label}
+        </label>
+      )}
+      {value && value.length > 0 && (
+        <div style={{
+          width: "100%", height: "64px", borderRadius: "6px", marginBottom: "6px",
+          background: `url(${value}) center/contain no-repeat`, border: "1px solid var(--input-border)",
+          position: "relative",
+        }}>
+          <button
+            onClick={() => onChange("")}
+            style={{
+              position: "absolute", top: "2px", right: "2px", width: "18px", height: "18px",
+              borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)", color: "#fff",
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "10px", padding: 0,
+            }}
+          >
+            <X size={10} />
+          </button>
+        </div>
+      )}
+      <div style={{ display: "flex", gap: "4px" }}>
+        <input
+          type="url"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="https://… or upload"
+          style={{ ...inputStyle, flex: 1 }}
+        />
+        <label style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          width: "32px", minWidth: "32px", borderRadius: "6px", cursor: "pointer",
+          background: "var(--accent-muted)", border: "1px solid var(--accent-border)",
+          color: "var(--accent)", flexShrink: 0,
+        }}>
+          <Upload size={13} />
+          <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
+        </label>
+      </div>
+    </div>
+  );
+}
 
 interface ContentPanelProps {
   node: ComponentNode;
@@ -382,25 +454,12 @@ function GalleryContentPanel({
                   borderTop: "1px solid var(--border)",
                 }}
               >
-                <div>
-                  <label
-                    style={{
-                      fontSize: "11px",
-                      color: "var(--fg-faint)",
-                      display: "block",
-                      marginBottom: "3px",
-                    }}
-                  >
-                    Image URL
-                  </label>
-                  <input
-                    type="url"
-                    value={img.src}
-                    onChange={(e) => updateImage(idx, "src", e.target.value)}
-                    placeholder="https://example.com/photo.jpg"
-                    style={baseInput}
-                  />
-                </div>
+                <ImageUploadField
+                  label="Image"
+                  value={img.src}
+                  onChange={(v) => updateImage(idx, "src", v)}
+                  inputStyle={baseInput}
+                />
                 <div>
                   <label
                     style={{
@@ -777,25 +836,12 @@ function SliderContentPanel({
                   borderTop: "1px solid var(--border)",
                 }}
               >
-                <div>
-                  <label
-                    style={{
-                      fontSize: "11px",
-                      color: "var(--fg-faint)",
-                      display: "block",
-                      marginBottom: "3px",
-                    }}
-                  >
-                    Image URL
-                  </label>
-                  <input
-                    type="url"
-                    value={slide.src}
-                    onChange={(e) => updateSlide(idx, "src", e.target.value)}
-                    placeholder="https://example.com/photo.jpg"
-                    style={baseInput}
-                  />
-                </div>
+                <ImageUploadField
+                  label="Image"
+                  value={slide.src}
+                  onChange={(v) => updateSlide(idx, "src", v)}
+                  inputStyle={baseInput}
+                />
                 <div>
                   <label
                     style={{
@@ -1134,14 +1180,12 @@ function CarouselContentPanel({
                       marginBottom: "3px",
                     }}
                   >
-                    Image URL
+                    Image
                   </label>
-                  <input
-                    type="url"
+                  <ImageUploadField
                     value={item.src}
-                    onChange={(e) => updateItem(idx, "src", e.target.value)}
-                    placeholder="https://example.com/photo.jpg"
-                    style={baseInput}
+                    onChange={(v) => updateItem(idx, "src", v)}
+                    inputStyle={baseInput}
                   />
                 </div>
                 <div>
@@ -1612,27 +1656,12 @@ function CardSliderContentPanel({
                       borderTop: "1px solid var(--border)",
                     }}
                   >
-                    <div>
-                      <label
-                        style={{
-                          fontSize: "11px",
-                          color: "var(--fg-faint)",
-                          display: "block",
-                          marginBottom: "3px",
-                        }}
-                      >
-                        Avatar / Image URL
-                      </label>
-                      <input
-                        type="url"
-                        value={card.image ?? ""}
-                        onChange={(e) =>
-                          updateCard(idx, "image", e.target.value)
-                        }
-                        placeholder="https://example.com/avatar.jpg"
-                        style={baseInput}
-                      />
-                    </div>
+                    <ImageUploadField
+                      label="Avatar / Image"
+                      value={card.image ?? ""}
+                      onChange={(v) => updateCard(idx, "image", v)}
+                      inputStyle={baseInput}
+                    />
                     <div>
                       <label
                         style={{
@@ -4554,7 +4583,7 @@ interface ListFieldConfig {
   fields: {
     key: string;
     label: string;
-    type: "text" | "textarea" | "url" | "select" | "boolean" | "number";
+    type: "text" | "textarea" | "url" | "select" | "boolean" | "number" | "image";
     options?: string[];
   }[];
   nameField: string;
@@ -4776,7 +4805,7 @@ function getListConfig(type: string): ListFieldConfig | null {
           { key: "quote", label: "Quote", type: "textarea" },
           { key: "author", label: "Name", type: "text" },
           { key: "role", label: "Role", type: "text" },
-          { key: "avatar", label: "Avatar URL", type: "url" },
+          { key: "avatar", label: "Avatar", type: "image" },
           { key: "rating", label: "Rating (1-5)", type: "number" },
         ],
         extraFields: [
@@ -4827,7 +4856,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         nameField: "name",
         fields: [
           { key: "name", label: "Name", type: "text" },
-          { key: "src", label: "Image URL", type: "url" },
+          { key: "src", label: "Image", type: "image" },
         ],
         extraFields: [{ key: "heading", label: "Heading", type: "text" }],
       };
@@ -4840,7 +4869,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         fields: [
           { key: "name", label: "Name", type: "text" },
           { key: "role", label: "Role", type: "text" },
-          { key: "avatar", label: "Avatar URL", type: "url" },
+          { key: "avatar", label: "Avatar", type: "image" },
         ],
         extraFields: [{ key: "heading", label: "Heading", type: "text" }],
       };
@@ -4854,7 +4883,7 @@ function getListConfig(type: string): ListFieldConfig | null {
           { key: "title", label: "Title", type: "text" },
           { key: "description", label: "Description", type: "textarea" },
           { key: "icon", label: "Icon Name", type: "text" },
-          { key: "image", label: "Image URL", type: "url" },
+          { key: "image", label: "Image", type: "image" },
           {
             key: "span",
             label: "Span (grid size)",
@@ -4877,7 +4906,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         itemLabel: "Image",
         nameField: "alt",
         fields: [
-          { key: "src", label: "Image URL", type: "url" },
+          { key: "src", label: "Image", type: "image" },
           { key: "alt", label: "Alt Text", type: "text" },
           { key: "height", label: "Height (px)", type: "number" },
         ],
@@ -4898,7 +4927,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         extraFields: [
           { key: "heading", label: "Heading", type: "textarea" },
           { key: "text", label: "Text", type: "textarea" },
-          { key: "image", label: "Image URL", type: "url" },
+          { key: "image", label: "Image", type: "image" },
           { key: "ctaText", label: "CTA Button Text", type: "text" },
           { key: "layout", label: "Layout", type: "select", options: ["50/50", "60/40", "40/60"] },
           { key: "reversed", label: "Reverse Order", type: "boolean" },
@@ -4915,7 +4944,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         nameField: "name",
         fields: [
           { key: "name", label: "Name", type: "text" },
-          { key: "src", label: "Image URL", type: "url" },
+          { key: "src", label: "Image", type: "image" },
         ],
         extraFields: [
           { key: "heading", label: "Heading", type: "text" },
@@ -4951,8 +4980,8 @@ function getListConfig(type: string): ListFieldConfig | null {
         nameField: "_value",
         fields: [],
         extraFields: [
-          { key: "beforeImage", label: "Before Image URL", type: "url" },
-          { key: "afterImage", label: "After Image URL", type: "url" },
+          { key: "beforeImage", label: "Before Image", type: "image" },
+          { key: "afterImage", label: "After Image", type: "image" },
           { key: "beforeLabel", label: "Before Label", type: "text" },
           { key: "afterLabel", label: "After Label", type: "text" },
           { key: "orientation", label: "Orientation", type: "select", options: ["horizontal", "vertical"] },
@@ -4970,7 +4999,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         nameField: "_value",
         fields: [],
         extraFields: [
-          { key: "image", label: "Image URL", type: "url" },
+          { key: "image", label: "Image", type: "image" },
           { key: "height", label: "Height", type: "text" },
           { key: "speed", label: "Parallax Speed", type: "number" },
           { key: "overlayColor", label: "Overlay Color", type: "color" },
@@ -5005,7 +5034,7 @@ function getListConfig(type: string): ListFieldConfig | null {
           { key: "title", label: "Title", type: "text" },
           { key: "category", label: "Category", type: "text" },
           { key: "src", label: "Video URL", type: "url" },
-          { key: "placeholder", label: "Image URL", type: "url" },
+          { key: "placeholder", label: "Image", type: "image" },
         ],
       };
     case "vertical-scroll-cards":
@@ -5046,7 +5075,7 @@ function getListConfig(type: string): ListFieldConfig | null {
         fields: [
           { key: "title", label: "Title", type: "text" },
           { key: "category", label: "Category", type: "text" },
-          { key: "image", label: "Image URL", type: "url" },
+          { key: "image", label: "Image", type: "image" },
         ],
         extraFields: [
           { key: "heading", label: "Heading", type: "text" },
@@ -5167,6 +5196,17 @@ function ListBasedContentPanel({
 
   const renderExtraField = (field: ContentFieldDef) => {
     const val = props[field.key];
+    if (field.type === "image") {
+      return (
+        <ImageUploadField
+          key={field.key}
+          label={field.label}
+          value={String(val ?? "")}
+          onChange={(v) => update(field.key, v)}
+          inputStyle={baseInput}
+        />
+      );
+    }
     if (field.type === "boolean") {
       return (
         <label
@@ -5490,6 +5530,17 @@ function ListBasedContentPanel({
                       </div>
                     );
                   }
+                  if (field.type === "image") {
+                    return (
+                      <ImageUploadField
+                        key={field.key}
+                        label={field.label}
+                        value={String(obj[field.key] ?? "")}
+                        onChange={(v) => updateItem(idx, field.key, v)}
+                        inputStyle={baseInput}
+                      />
+                    );
+                  }
                   if (field.type === "textarea") {
                     return (
                       <div key={field.key}>
@@ -5591,6 +5642,7 @@ interface ContentFieldDef {
     | "select"
     | "color"
     | "url"
+    | "image"
     | "icon"
     | "range";
   options?: string[];
@@ -6008,8 +6060,8 @@ function getContentFields(
       return [
         {
           key: "src",
-          label: "Image URL",
-          type: "url",
+          label: "Image",
+          type: "image",
           placeholder: "https://...",
         },
         {
@@ -6069,7 +6121,7 @@ function getContentFields(
     case "video":
       return [
         { key: "src", label: "Video URL", type: "url" },
-        { key: "poster", label: "Poster Image", type: "url" },
+        { key: "poster", label: "Poster Image", type: "image" },
         { key: "autoplay", label: "Autoplay", type: "boolean" },
         { key: "loop", label: "Loop", type: "boolean" },
         { key: "muted", label: "Muted", type: "boolean" },
@@ -6079,7 +6131,7 @@ function getContentFields(
       return [
         { key: "title", label: "Title", type: "text" },
         { key: "description", label: "Description", type: "textarea" },
-        { key: "image", label: "Card Image", type: "url" },
+        { key: "image", label: "Card Image", type: "image" },
         { key: "imageHeight", label: "Image Height", type: "text" },
         { key: "imageFit", label: "Image Fit", type: "select", options: ["cover", "contain", "fill", "none"] },
       ];
@@ -6486,7 +6538,7 @@ function getContentFields(
 
     case "avatar":
       return [
-        { key: "src", label: "Image URL", type: "url" },
+        { key: "src", label: "Image", type: "image" },
         { key: "name", label: "Name", type: "text", placeholder: "John Doe" },
         {
           key: "size",
@@ -8165,6 +8217,14 @@ function ContentField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.placeholder}
           style={baseInput}
+        />
+      )}
+
+      {field.type === "image" && (
+        <ImageUploadField
+          value={String(value ?? "")}
+          onChange={(v) => onChange(v)}
+          inputStyle={baseInput}
         />
       )}
 
