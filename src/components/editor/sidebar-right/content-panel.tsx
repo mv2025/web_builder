@@ -49,6 +49,11 @@ export function ContentPanel({ node }: ContentPanelProps) {
     return <CardSliderContentPanel node={node} props={props} update={update} />;
   }
 
+  // Normal Story Carousel — item list + item container settings
+  if (node.type === "normal-story-carousel") {
+    return <NormalStoryCarouselContentPanel props={props} update={update} />;
+  }
+
   // Table gets full table editor
   if (node.type === "table") {
     return <TableContentPanel props={props} update={update} />;
@@ -2802,6 +2807,339 @@ function MapContentPanel({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Normal Story Carousel Content Panel ────────────────────────────────────
+interface StoryCarouselItem {
+  id: number;
+  title: string;
+  category: string;
+  image: string;
+}
+
+function NormalStoryCarouselContentPanel({
+  props,
+  update,
+}: {
+  props: Record<string, unknown>;
+  update: (key: string, value: unknown) => void;
+}) {
+  const items = (props.items as StoryCarouselItem[] | undefined) ?? [];
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
+  const baseInput: React.CSSProperties = {
+    width: "100%",
+    padding: "7px 10px",
+    borderRadius: "6px",
+    fontSize: "12px",
+    background: "var(--input-bg)",
+    border: "1px solid var(--input-border)",
+    color: "var(--input-fg)",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const addItem = () => {
+    const nextId =
+      items.length === 0 ? 1 : Math.max(...items.map((i) => i.id)) + 1;
+    const newItem: StoryCarouselItem = {
+      id: nextId,
+      title: `Item ${nextId}`,
+      category: "Category",
+      image:
+        "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1200",
+    };
+    update("items", [...items, newItem]);
+    setExpandedIdx(items.length);
+  };
+
+  const removeItem = (idx: number) => {
+    update(
+      "items",
+      items.filter((_, i) => i !== idx),
+    );
+    if (expandedIdx === idx) setExpandedIdx(null);
+  };
+
+  const updateItem = (idx: number, field: keyof StoryCarouselItem, value: string) => {
+    const updated = items.map((it, i) =>
+      i === idx ? { ...it, [field]: value } : it,
+    );
+    update("items", updated);
+  };
+
+  const moveItem = (idx: number, dir: -1 | 1) => {
+    const nextIdx = idx + dir;
+    if (nextIdx < 0 || nextIdx >= items.length) return;
+    const updated = [...items];
+    [updated[idx], updated[nextIdx]] = [updated[nextIdx], updated[idx]];
+    update("items", updated);
+    if (expandedIdx === idx) setExpandedIdx(nextIdx);
+  };
+
+  const rowLabel: React.CSSProperties = {
+    fontSize: "11px",
+    color: "var(--fg-ghost)",
+    display: "block",
+    marginBottom: "4px",
+  };
+
+  return (
+    <div style={{ padding: "12px" }}>
+      {/* Item container settings */}
+      <SectionLabel>Item Container</SectionLabel>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "8px",
+          marginBottom: "16px",
+        }}
+      >
+        <div>
+          <label style={rowLabel}>Item Width</label>
+          <input
+            style={baseInput}
+            value={(props.itemWidth as string) ?? "40%"}
+            onChange={(e) => update("itemWidth", e.target.value)}
+            placeholder="40% or 500px"
+          />
+        </div>
+        <div>
+          <label style={rowLabel}>Aspect Ratio</label>
+          <input
+            style={baseInput}
+            value={(props.aspectRatio as string) ?? "16/10"}
+            onChange={(e) => update("aspectRatio", e.target.value)}
+            placeholder="16/10"
+          />
+        </div>
+        <div>
+          <label style={rowLabel}>Item Height</label>
+          <input
+            style={baseInput}
+            value={(props.itemHeight as string) ?? ""}
+            onChange={(e) => update("itemHeight", e.target.value)}
+            placeholder="auto (uses aspect)"
+          />
+        </div>
+        <div>
+          <label style={rowLabel}>Gap</label>
+          <input
+            style={baseInput}
+            value={(props.gap as string) ?? "32px"}
+            onChange={(e) => update("gap", e.target.value)}
+            placeholder="32px"
+          />
+        </div>
+        <div>
+          <label style={rowLabel}>Corner Radius</label>
+          <input
+            style={baseInput}
+            value={(props.borderRadius as string) ?? "24px"}
+            onChange={(e) => update("borderRadius", e.target.value)}
+            placeholder="24px"
+          />
+        </div>
+        <div>
+          <label style={rowLabel}>Outer Padding</label>
+          <input
+            style={baseInput}
+            value={(props.padding as string) ?? "96px 24px"}
+            onChange={(e) => update("padding", e.target.value)}
+            placeholder="96px 24px"
+          />
+        </div>
+      </div>
+
+      {/* Display toggles */}
+      <SectionLabel>Display</SectionLabel>
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" }}>
+        {[
+          { key: "showTitle", label: "Show title" },
+          { key: "showCategory", label: "Show category" },
+          { key: "showDots", label: "Show pagination dots" },
+          { key: "overlayOnHover", label: "Reveal caption on hover only" },
+        ].map((t) => (
+          <label
+            key={t.key}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "12px",
+              color: "var(--fg-faint)",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={(props[t.key] as boolean) ?? true}
+              onChange={(e) => update(t.key, e.target.checked)}
+            />
+            {t.label}
+          </label>
+        ))}
+      </div>
+
+      {/* Items */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "8px",
+        }}
+      >
+        <SectionLabel>Items ({items.length})</SectionLabel>
+        <button
+          onClick={addItem}
+          style={{
+            fontSize: "11px",
+            padding: "4px 8px",
+            border: "1px solid var(--accent)",
+            borderRadius: "4px",
+            background: "var(--accent)",
+            color: "#fff",
+            cursor: "pointer",
+          }}
+          title="Add item"
+        >
+          <Plus size={12} style={{ verticalAlign: "middle", marginRight: 3 }} />
+          Add
+        </button>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {items.map((item, idx) => {
+          const isOpen = expandedIdx === idx;
+          return (
+            <div
+              key={item.id}
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: "6px",
+                background: "var(--input-bg)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 8px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setExpandedIdx(isOpen ? null : idx)}
+              >
+                <GripVertical size={12} color="var(--fg-dim)" />
+                <div
+                  style={{
+                    flex: 1,
+                    fontSize: "12px",
+                    color: "var(--fg)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.title || "Untitled"}
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    moveItem(idx, -1);
+                  }}
+                  disabled={idx === 0}
+                  style={{
+                    padding: "2px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: idx === 0 ? "not-allowed" : "pointer",
+                    opacity: idx === 0 ? 0.3 : 1,
+                    color: "var(--fg-dim)",
+                  }}
+                  title="Move up"
+                >
+                  <ChevronUp size={12} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    moveItem(idx, 1);
+                  }}
+                  disabled={idx === items.length - 1}
+                  style={{
+                    padding: "2px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: idx === items.length - 1 ? "not-allowed" : "pointer",
+                    opacity: idx === items.length - 1 ? 0.3 : 1,
+                    color: "var(--fg-dim)",
+                  }}
+                  title="Move down"
+                >
+                  <ChevronDown size={12} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeItem(idx);
+                  }}
+                  style={{
+                    padding: "2px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#ef4444",
+                  }}
+                  title="Delete"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+              {isOpen && (
+                <div
+                  style={{
+                    padding: "8px",
+                    borderTop: "1px solid var(--border)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px",
+                  }}
+                >
+                  <div>
+                    <label style={rowLabel}>Title</label>
+                    <input
+                      style={baseInput}
+                      value={item.title}
+                      onChange={(e) => updateItem(idx, "title", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label style={rowLabel}>Category</label>
+                    <input
+                      style={baseInput}
+                      value={item.category}
+                      onChange={(e) => updateItem(idx, "category", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label style={rowLabel}>Image URL</label>
+                    <input
+                      style={baseInput}
+                      value={item.image}
+                      onChange={(e) => updateItem(idx, "image", e.target.value)}
+                      placeholder="https://…"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -7544,6 +7882,32 @@ function getContentFields(
         { key: "footerRight", label: "Footer Right", type: "text" },
         { key: "viewportHeight", label: "Viewport Height", type: "text" },
         { key: "scrollHeight", label: "Scroll Height", type: "text" },
+      ];
+
+    case "wave-1":
+    case "wave-2":
+    case "wave-3":
+    case "wave-4":
+    case "wave-5":
+    case "wave-6":
+    case "wave-7":
+    case "wave-8":
+    case "wave-9":
+    case "wave-10":
+      return [
+        { key: "color", label: "Primary Color", type: "color" },
+        { key: "secondaryColor", label: "Secondary Color", type: "color" },
+        { key: "tertiaryColor", label: "Tertiary Color", type: "color" },
+        { key: "height", label: "Height", type: "text", placeholder: "180px" },
+        { key: "opacity", label: "Opacity", type: "range", min: 0, max: 1, step: 0.05 },
+        { key: "layerOpacity", label: "Layers Opacity", type: "range", min: 0, max: 1, step: 0.05 },
+        { key: "layerCount", label: "Layers", type: "range", min: 3, max: 60, step: 1 },
+        { key: "position", label: "Anchor", type: "select", options: ["bottom", "top"] },
+        { key: "animationEnabled", label: "Animate", type: "boolean" },
+        { key: "animationSpeed", label: "Speed (seconds/loop)", type: "range", min: 2, max: 60, step: 1 },
+        { key: "animationDirection", label: "Direction", type: "select", options: ["left", "right"] },
+        { key: "flipHorizontal", label: "Flip Horizontal", type: "boolean" },
+        { key: "flipVertical", label: "Flip Vertical", type: "boolean" },
       ];
 
     default:

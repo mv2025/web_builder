@@ -49,6 +49,7 @@ import { TextZoomScrollBlock } from "@/components/builder-components/animated/te
 import { StoryScrollBlock } from "@/components/builder-components/animated/story-scroll-block"
 import { NormalStoryCarouselBlock } from "@/components/builder-components/animated/normal-story-carousel-block"
 import { TextRevealBlock } from "@/components/builder-components/animated/text-reveal-block"
+import { WaveBlock } from "@/components/builder-components/waves/wave-block"
 import {
   SliderBlock,
   CarouselBlock,
@@ -98,6 +99,14 @@ const ANIMATED_SCROLL_TYPES = new Set([
   "horizontal-scroll",
   "vertical-scroll-cards",
   "text-zoom-scroll",
+]);
+
+// Decorative background waves — must stay absolutely positioned with a fixed
+// height across all breakpoints. Skips the mobile/tablet auto-responsive
+// resets that would otherwise collapse them to relative + height:auto.
+const WAVE_TYPES = new Set([
+  "wave-1", "wave-2", "wave-3", "wave-4", "wave-5",
+  "wave-6", "wave-7", "wave-8", "wave-9", "wave-10",
 ]);
 
 const CONTENT_PROP_TYPES = new Set(["card", "hero", "footer"]);
@@ -243,7 +252,33 @@ export function ComponentRenderer({
         (tabletS as Record<string, unknown>)[prop] !== undefined
       : (tabletS as Record<string, unknown>)[prop] !== undefined;
 
-  if (isMobile || isTablet) {
+  const isWaveType = WAVE_TYPES.has(node.type);
+  if (isWaveType) {
+    inlineStyles.boxSizing = "border-box";
+    if (isMobile || isTablet) {
+      // On tablet/mobile, render the wave as an IN-FLOW BLOCK instead of
+      // absolutely positioned. Reason: on small viewports the wave's parent
+      // (section/container/hero) frequently has content that stacks vertically,
+      // making it very tall — a wave with `bottom: 0; height: 144px` then sits
+      // far below the fold and behaves inconsistently. In-flow rendering makes
+      // the wave appear reliably wherever it is in the tree, taking full width
+      // and its scaled height, on any size.
+      inlineStyles.position = "relative";
+      delete (inlineStyles as Record<string, unknown>).top;
+      delete (inlineStyles as Record<string, unknown>).right;
+      delete (inlineStyles as Record<string, unknown>).bottom;
+      delete (inlineStyles as Record<string, unknown>).left;
+      inlineStyles.width = "100%";
+      inlineStyles.marginTop = "auto"; // push to end of flex-column parents
+      const rawH = typeof inlineStyles.height === "string" ? inlineStyles.height : "180px";
+      const px = parseFloat(rawH);
+      if (!isNaN(px)) {
+        const scale = isMobile ? 0.6 : 0.8;
+        inlineStyles.height = `${Math.round(px * scale)}px`;
+      }
+    }
+  }
+  if ((isMobile || isTablet) && !isWaveType) {
     const desktopS = node.styles.desktop || {};
     const canvasW = isMobile ? 390 : 768;
 
@@ -454,23 +489,30 @@ export function ComponentRenderer({
         ...(!isPreview
           ? {
               ...(isMobile || isTablet
-                ? {
-                    position: "relative" as const,
-                    top: "auto",
-                    left: "auto",
-                    right: "auto",
-                    bottom: "auto",
-                    ...(is3DType || isAnimatedScroll
-                      ? {}
-                      : { height: "auto", minHeight: "auto" }),
-                    ...(isContainerType ? { width: "100%" } : {}),
-                    ...(inline
-                      ? {
-                          width: "fit-content",
-                          display: "inline-flex" as const,
-                        }
-                      : {}),
-                  }
+                ? isWaveType
+                  ? {
+                      // Waves must remain absolutely positioned with their
+                      // configured height even on tablet/mobile so they stay
+                      // anchored to the section as decorative backgrounds.
+                      position: (resolvedStyles.position as "absolute" | "fixed") ?? "absolute",
+                    }
+                  : {
+                      position: "relative" as const,
+                      top: "auto",
+                      left: "auto",
+                      right: "auto",
+                      bottom: "auto",
+                      ...(is3DType || isAnimatedScroll
+                        ? {}
+                        : { height: "auto", minHeight: "auto" }),
+                      ...(isContainerType ? { width: "100%" } : {}),
+                      ...(inline
+                        ? {
+                            width: "fit-content",
+                            display: "inline-flex" as const,
+                          }
+                        : {}),
+                    }
                 : {
                     position:
                       resolvedStyles.position === "absolute" ||
@@ -688,6 +730,19 @@ function ComponentContent({
 }: Props) {
   const props = node.props as Record<string, any>; // any here lets us spread into React components
 
+  // Typography needs the user's style edits forwarded onto the actual <h1>/<p>
+  // tag; otherwise the block's hard-coded fontSize/etc. wins the cascade.
+  const typographyStyles = resolveResponsiveStyles(node.styles, breakpoint);
+  const userTypeProps = {
+    userFontSize: typographyStyles.fontSize,
+    userFontWeight: typographyStyles.fontWeight,
+    userLineHeight: typographyStyles.lineHeight,
+    userLetterSpacing: typographyStyles.letterSpacing,
+    userColor: typographyStyles.color,
+    userTextAlign: typographyStyles.textAlign,
+    userOpacity: typographyStyles.opacity,
+  };
+
   switch (node.type) {
     // ── Marketing ─────────────────────────────────────────────────────────────
     case "hero":
@@ -709,9 +764,9 @@ function ComponentContent({
 
     // ── Typography ────────────────────────────────────────────────────────────
     case "heading":
-      return <HeadingBlock {...props} breakpoint={breakpoint} />;
+      return <HeadingBlock {...props} {...userTypeProps} breakpoint={breakpoint} />;
     case "paragraph":
-      return <ParagraphBlock {...props} breakpoint={breakpoint} />;
+      return <ParagraphBlock {...props} {...userTypeProps} breakpoint={breakpoint} />;
     case "blockquote":
       return (
         <blockquote
@@ -1755,6 +1810,8 @@ function ComponentContent({
           brand={props.brand as string}
           links={props.links as NavLink[]}
           breakpoint={breakpoint}
+          wrapperBackground={typographyStyles.backgroundColor}
+          wrapperColor={typographyStyles.color}
         />
       );
 
@@ -2619,9 +2676,20 @@ function ComponentContent({
     case "story-scroll":
       return <StoryScrollBlock {...props} isPreview={isPreview} />
     case "normal-story-carousel":
-      return <NormalStoryCarouselBlock {...props} isPreview={isPreview} />
+      return <NormalStoryCarouselBlock {...props} isPreview={isPreview} breakpoint={breakpoint} />
     case "text-reveal":
-      return <TextRevealBlock {...props} isPreview={isPreview} />
+      return <TextRevealBlock {...props} isPreview={isPreview} breakpoint={breakpoint} />
+    case "wave-1":
+    case "wave-2":
+    case "wave-3":
+    case "wave-4":
+    case "wave-5":
+    case "wave-6":
+    case "wave-7":
+    case "wave-8":
+    case "wave-9":
+    case "wave-10":
+      return <WaveBlock {...props} waveType={node.type} breakpoint={breakpoint} />
     default:
       return (
         <div
@@ -3283,14 +3351,29 @@ function NavbarBlock({
   brand,
   links = [],
   breakpoint = "desktop",
+  wrapperBackground,
+  wrapperColor,
 }: {
   brand?: string;
   links?: NavLink[];
   breakpoint?: string;
+  // Forwarded from the ComponentRenderer wrapper so dropdown & mobile-menu
+  // surfaces adopt the same background/text color the user set on the navbar
+  // wrapper. Falls back to safe defaults when the user hasn't styled them.
+  wrapperBackground?: string;
+  wrapperColor?: string;
 }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = breakpoint === "mobile" || breakpoint === "tablet";
+
+  // Surface color for dropdowns / mobile menu. Match the navbar's own
+  // background when set; otherwise fall back to a neutral card background so
+  // the surface is opaque and readable.
+  const surfaceBg = wrapperBackground && wrapperBackground.trim()
+    ? wrapperBackground
+    : "var(--card-bg, #fff)";
+  const surfaceColor = wrapperColor && wrapperColor.trim() ? wrapperColor : "inherit";
 
   return (
     <nav
@@ -3300,64 +3383,71 @@ function NavbarBlock({
         justifyContent: "space-between",
         padding: "0 24px",
         position: "relative",
+        // Prevent the nav from overflowing its wrapper — the padding was
+        // being added on top of a 100%-width nav element, so the total ended
+        // up wider than the section on some layouts (visible extra strip in
+        // preview mode).
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       <span style={{ fontSize: "1.15em", fontWeight: 800 }}>
         {brand ?? "Brand"}
       </span>
 
-      {/* Hamburger button — mobile/tablet only */}
+      {/* Hamburger / close button — mobile & tablet only */}
       {isMobile && (
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
           style={{
             background: "none",
             border: "none",
             cursor: "pointer",
             color: "inherit",
-            padding: "6px",
+            padding: "8px",
+            width: "40px",
+            height: "40px",
             display: "flex",
-            flexDirection: "column",
-            gap: "4px",
             alignItems: "center",
             justifyContent: "center",
+            lineHeight: 0,
+            flexShrink: 0,
           }}
         >
-          <span
-            style={{
-              display: "block",
-              width: "20px",
-              height: "2px",
-              background: "currentColor",
-              borderRadius: "1px",
-              transition: "transform 0.2s, opacity 0.2s",
-              transform: mobileOpen ? "rotate(45deg) translateY(6px)" : "none",
-            }}
-          />
-          <span
-            style={{
-              display: "block",
-              width: "20px",
-              height: "2px",
-              background: "currentColor",
-              borderRadius: "1px",
-              transition: "opacity 0.2s",
-              opacity: mobileOpen ? 0 : 1,
-            }}
-          />
-          <span
-            style={{
-              display: "block",
-              width: "20px",
-              height: "2px",
-              background: "currentColor",
-              borderRadius: "1px",
-              transition: "transform 0.2s, opacity 0.2s",
-              transform: mobileOpen
-                ? "rotate(-45deg) translateY(-6px)"
-                : "none",
-            }}
-          />
+          {mobileOpen ? (
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
         </button>
       )}
 
@@ -3422,12 +3512,13 @@ function NavbarBlock({
                       top: "100%",
                       left: "0",
                       minWidth: "160px",
-                      background: "var(--card-bg, #fff)",
+                      background: surfaceBg,
+                      color: surfaceColor,
                       border: "1px solid rgba(128,128,128,0.15)",
                       borderRadius: "8px",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
                       padding: "4px",
-                      zIndex: 100,
+                      zIndex: 9999,
                       marginTop: "2px",
                     }}
                   >
@@ -3472,10 +3563,15 @@ function NavbarBlock({
             top: "100%",
             left: 0,
             right: 0,
-            zIndex: 200,
-            background: "inherit",
+            // Bumped to 9999 so the menu can never end up beneath the hero /
+            // section that follows the navbar. The previous value (200) lost
+            // to any element that established its own stacking context above
+            // the navbar's parent (transforms, filters, sticky bg layers…).
+            zIndex: 9999,
+            background: surfaceBg,
+            color: surfaceColor,
             borderTop: "1px solid rgba(128,128,128,0.15)",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
             padding: "8px 0",
           }}
         >

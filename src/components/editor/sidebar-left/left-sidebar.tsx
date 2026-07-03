@@ -24,18 +24,18 @@ import {
   Calendar, ChevronsRight, MoreHorizontal, PanelLeft, ListOrdered,
   ExternalLink, Share2, UserCircle, MessageCircle, AlertTriangle,
   Tags, Table2, Terminal, Mail, Send, Flag, MessageSquare,
-  Play, ArrowRightLeft, ArrowDownUp, ZoomIn,
+  Play, ArrowRightLeft, ArrowDownUp, ZoomIn, Waves,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 const CATEGORIES: ComponentCategory[] = [
   "Layout", "Typography", "Buttons", "Media", "Forms",
-  "Marketing", "Interactive", "Advanced", "3D", "Animated",
+  "Marketing", "Interactive", "Advanced", "3D", "Animated", "Waves",
 ]
 
 const CATEGORY_LUCIDE: Record<ComponentCategory, LucideIcon> = {
   Layout: LayoutGrid, Typography: Type, Buttons: MousePointerClick, Media: ImageIcon,
-  Forms: TextCursorInput, Marketing: Star, Interactive: Zap, Advanced: Sparkles, "3D": Globe, Animated: Play,
+  Forms: TextCursorInput, Marketing: Star, Interactive: Zap, Advanced: Sparkles, "3D": Globe, Animated: Play, Waves: Waves,
 }
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -68,6 +68,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   "alert-triangle": AlertTriangle, tags: Tags, "table-2": Table2, terminal: Terminal,
   mail: Mail, send: Send, flag: Flag, "message-square": MessageSquare,
   "arrow-right-left": ArrowRightLeft, "arrow-down-up": ArrowDownUp, "zoom-in": ZoomIn,
+  waves: Waves,
 }
 
 export function LeftSidebar() {

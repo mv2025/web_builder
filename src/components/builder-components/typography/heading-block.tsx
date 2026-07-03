@@ -6,6 +6,16 @@ interface HeadingBlockProps {
   gradientTo?: string
   align?: "left" | "center" | "right"
   breakpoint?: "desktop" | "tablet" | "mobile"
+  // Style overrides forwarded from the ComponentRenderer wrapper. When the
+  // user edits fontSize / fontWeight / lineHeight / letterSpacing in the
+  // Style panel, those values arrive here and take precedence over the
+  // level-based defaults so the tag actually reflects the edit.
+  userFontSize?: string
+  userFontWeight?: string
+  userLineHeight?: string
+  userLetterSpacing?: string
+  userColor?: string
+  userTextAlign?: string
   [key: string]: unknown
 }
 
@@ -23,17 +33,23 @@ export function HeadingBlock({
   gradientTo = "#d946ef",
   align,
   breakpoint = "desktop",
+  userFontSize,
+  userFontWeight,
+  userLineHeight,
+  userLetterSpacing,
+  userColor,
+  userTextAlign,
 }: HeadingBlockProps) {
   const Tag = level
   const sizeMap = HEADING_SIZES[breakpoint] ?? HEADING_SIZES.desktop
 
   return (
     <Tag style={{
-      fontSize: sizeMap[level],
-      fontWeight: 800,
-      lineHeight: 1.1,
-      letterSpacing: "-0.02em",
-      textAlign: align ?? "inherit",
+      fontSize: userFontSize ?? sizeMap[level],
+      fontWeight: userFontWeight ?? 800,
+      lineHeight: userLineHeight ?? 1.1,
+      letterSpacing: userLetterSpacing ?? "-0.02em",
+      textAlign: (userTextAlign as React.CSSProperties["textAlign"]) ?? align ?? "inherit",
       margin: 0,
       ...(gradient ? {
         backgroundImage: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
@@ -41,7 +57,7 @@ export function HeadingBlock({
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
         color: "transparent",
-      } : { color: "inherit" }),
+      } : { color: userColor ?? "inherit" }),
     }}>
       {text}
     </Tag>

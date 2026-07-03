@@ -136,12 +136,20 @@ export function EditorCanvas() {
 
       const node = createNode(type);
 
-      node.styles.desktop = {
-        ...(node.styles.desktop as StyleProps),
-        position: "absolute",
-        top: `${dropY}px`,
-        left: `${dropX}px`,
-      } as StyleProps;
+      // Waves are decorative and default to width: 100%. If we also set
+      // left: dropX (px), width: 100% starts from that offset and overflows
+      // the container. So drop waves at their default (bottom-anchored, left: 0);
+      // the user can drag them freely afterwards. Non-wave components take the
+      // cursor position as usual.
+      const isWave = /^wave-\d+$/.test(type);
+      if (!isWave) {
+        node.styles.desktop = {
+          ...(node.styles.desktop as StyleProps),
+          position: "absolute",
+          top: `${dropY}px`,
+          left: `${dropX}px`,
+        } as StyleProps;
+      }
 
       addNode(node, target.parentId, target.index);
     },
@@ -242,7 +250,7 @@ export function EditorCanvas() {
             boxSizing: "border-box",
             position: "relative",
             flexShrink: 0,
-            transform: previewMode ? "none" : `scale(${viewport.zoom})`,
+            transform: previewMode ? "none" : `scale(${effectiveZoom})`,
             transformOrigin: "top center",
             ...(showGrid && !previewMode
               ? {

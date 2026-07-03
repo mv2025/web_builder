@@ -1,8 +1,20 @@
+import type * as React from "react"
+
 interface ParagraphBlockProps {
   text?: string
   size?: "sm" | "md" | "lg" | "xl"
   align?: "left" | "center" | "right"
   breakpoint?: "desktop" | "tablet" | "mobile"
+  // Style overrides forwarded from the ComponentRenderer wrapper so that
+  // edits in the Style panel actually reach the <p> element instead of being
+  // overridden by the hard-coded size prop.
+  userFontSize?: string
+  userFontWeight?: string
+  userLineHeight?: string
+  userLetterSpacing?: string
+  userColor?: string
+  userTextAlign?: string
+  userOpacity?: string
   [key: string]: unknown
 }
 
@@ -17,10 +29,26 @@ export function ParagraphBlock({
   size = "md",
   align,
   breakpoint = "desktop",
+  userFontSize,
+  userFontWeight,
+  userLineHeight,
+  userLetterSpacing,
+  userColor,
+  userTextAlign,
+  userOpacity,
 }: ParagraphBlockProps) {
   const sizeMap = PARA_SIZES[breakpoint] ?? PARA_SIZES.desktop
   return (
-    <p style={{ fontSize: sizeMap[size], color: "inherit", lineHeight: 1.7, textAlign: align ?? "inherit", margin: 0, opacity: 0.8 }}>
+    <p style={{
+      fontSize: userFontSize ?? sizeMap[size],
+      fontWeight: userFontWeight,
+      color: userColor ?? "inherit",
+      lineHeight: userLineHeight ?? 1.7,
+      letterSpacing: userLetterSpacing,
+      textAlign: (userTextAlign as React.CSSProperties["textAlign"]) ?? align ?? "inherit",
+      margin: 0,
+      opacity: userOpacity !== undefined ? parseFloat(userOpacity) : 0.8,
+    }}>
       {text}
     </p>
   )
