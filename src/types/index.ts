@@ -229,6 +229,7 @@ export type ComponentType =
   | "counter" | "progress-bar" | "popover" | "steps"
   // Advanced
   | "marquee" | "timeline" | "bento-grid" | "masonry-grid"
+  | "split-section" | "comparison-table" | "before-after-slider" | "parallax-image" | "logo-marquee"
   // 3D
   | "floating-objects" | "interactive-shapes" | "3d-hero"
   | "particle-system" | "globe" | "product-showcase"

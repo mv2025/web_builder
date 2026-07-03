@@ -161,7 +161,7 @@ const registry: Record<ComponentType, ComponentMeta> = {
   },
   testimonials: {
     type: "testimonials", label: "Testimonials", icon: "message-square-quote", category: "Marketing",
-    defaultProps: { heading: "What people say", items: [] },
+    defaultProps: { heading: "Loved by thousands of teams", variant: "grid", items: [] },
     canHaveChildren: false, draggable: true, droppable: false, resizable: false,
     defaultStyles: { paddingTop: "80px", paddingBottom: "80px", width: "100%" },
   },
@@ -172,8 +172,8 @@ const registry: Record<ComponentType, ComponentMeta> = {
     defaultStyles: { paddingTop: "80px", paddingBottom: "80px", width: "100%" },
   },
   pricing: {
-    type: "pricing", label: "Pricing", icon: "badge-dollar-sign", category: "Marketing",
-    defaultProps: { heading: "Simple Pricing", plans: [] },
+    type: "pricing", label: "Pricing Table", icon: "badge-dollar-sign", category: "Marketing",
+    defaultProps: { heading: "Simple, transparent pricing", subheading: "No hidden fees. Cancel anytime.", showToggle: true, plans: [] },
     canHaveChildren: false, draggable: true, droppable: false, resizable: false,
     defaultStyles: { paddingTop: "80px", paddingBottom: "80px", width: "100%" },
   },
@@ -182,6 +182,43 @@ const registry: Record<ComponentType, ComponentMeta> = {
     defaultProps: { heading: "Trusted by teams at", logos: [] },
     canHaveChildren: false, draggable: true, droppable: false, resizable: false,
     defaultStyles: { paddingTop: "60px", paddingBottom: "60px", width: "100%" },
+  },
+  "logo-marquee": {
+    type: "logo-marquee", label: "Logo Marquee", icon: "move-right", category: "Marketing",
+    defaultProps: {
+      heading: "Trusted by the best teams",
+      logos: [
+        { name: "Vercel" }, { name: "Stripe" }, { name: "Linear" }, { name: "Notion" },
+        { name: "Figma" }, { name: "GitHub" }, { name: "Slack" }, { name: "Shopify" },
+      ],
+      speed: 30, direction: "left", pauseOnHover: true, logoHeight: "28px", gap: "64px", grayscale: true,
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { paddingTop: "48px", paddingBottom: "48px", width: "100%", overflow: "hidden" },
+  },
+  "comparison-table": {
+    type: "comparison-table", label: "Comparison Table", icon: "table-2", category: "Marketing",
+    defaultProps: {
+      heading: "Compare plans", subheading: "Find the perfect plan for your needs",
+      accentColor: "#0ea5e9",
+      plans: [
+        { name: "Free", price: "$0/mo" },
+        { name: "Pro", price: "$29/mo", highlighted: true },
+        { name: "Enterprise", price: "Custom" },
+      ],
+      features: [
+        { name: "Projects", category: "Usage", values: ["3", "Unlimited", "Unlimited"] },
+        { name: "Team members", category: "Usage", values: ["1", "5", "Unlimited"] },
+        { name: "Storage", category: "Usage", values: ["1 GB", "50 GB", "Unlimited"] },
+        { name: "Custom domain", category: "Features", values: [false, true, true] },
+        { name: "Analytics", category: "Features", values: [false, true, true] },
+        { name: "API access", category: "Features", values: [false, false, true] },
+        { name: "Priority support", category: "Support", values: [false, true, true] },
+        { name: "SLA", category: "Support", values: [false, false, true] },
+      ],
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { paddingTop: "80px", paddingBottom: "80px", width: "100%" },
   },
   statistics: {
     type: "statistics", label: "Statistics", icon: "bar-chart-2", category: "Marketing",
@@ -273,6 +310,30 @@ const registry: Record<ComponentType, ComponentMeta> = {
     defaultStyles: { width: "320px" },
   },
 
+  // ── Interactive (new) ────────────────────────────────────────────────────────
+  "before-after-slider": {
+    type: "before-after-slider", label: "Before/After Slider", icon: "columns-2", category: "Interactive",
+    defaultProps: {
+      beforeImage: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=800",
+      afterImage: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=800",
+      beforeLabel: "Before", afterLabel: "After", orientation: "horizontal",
+      initialPosition: 50, sliderColor: "#ffffff", borderRadius: "16px", height: "400px",
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%", maxWidth: "800px" },
+  },
+  "parallax-image": {
+    type: "parallax-image", label: "Parallax Image", icon: "image", category: "Interactive",
+    defaultProps: {
+      image: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1200",
+      height: "500px", speed: 0.5,
+      overlayColor: "rgba(0,0,0,0.4)", overlayOpacity: 1,
+      heading: "", subheading: "", textAlign: "center",
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%" },
+  },
+
   // ── Advanced ─────────────────────────────────────────────────────────────────
   marquee: {
     type: "marquee", label: "Marquee", icon: "move-right", category: "Advanced",
@@ -287,16 +348,48 @@ const registry: Record<ComponentType, ComponentMeta> = {
     defaultStyles: { width: "100%" },
   },
   "bento-grid": {
-    type: "bento-grid", label: "Bento Grid", icon: "grid-3x3", category: "Advanced",
-    defaultProps: { items: [] },
-    canHaveChildren: false, draggable: true, droppable: false, resizable: false,
-    defaultStyles: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", width: "100%" },
+    type: "bento-grid", label: "Bento Grid", icon: "grid-3x3", category: "Layout",
+    defaultProps: {
+      heading: "Why choose us", subheading: "Everything you need in one platform",
+      items: [
+        { title: "Lightning Fast", description: "Built for speed. Every interaction feels instant.", icon: "⚡", span: "2x1" },
+        { title: "AI-Powered", description: "Generate layouts, copy, and components with AI.", icon: "🤖", span: "1x1" },
+        { title: "Responsive", description: "Pixel-perfect on every screen size.", icon: "📱", span: "1x1" },
+        { title: "Beautiful Design System", description: "A comprehensive library of professionally designed components.", icon: "🎨", span: "1x2" },
+        { title: "One-Click Deploy", description: "Ship to production instantly.", icon: "🚀", span: "1x1" },
+        { title: "Collaboration", description: "Real-time editing with your team.", icon: "👥", span: "1x1" },
+      ],
+      gap: "16px", borderRadius: "16px", cardBackground: "rgba(128,128,128,0.05)", cardBorderColor: "rgba(128,128,128,0.12)",
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%", paddingTop: "60px", paddingBottom: "60px" },
   },
   "masonry-grid": {
-    type: "masonry-grid", label: "Masonry Grid", icon: "layout-dashboard", category: "Advanced",
-    defaultProps: { columns: 3, items: [] },
-    canHaveChildren: false, draggable: true, droppable: false, resizable: false,
-    defaultStyles: { width: "100%" },
+    type: "masonry-grid", label: "Masonry Gallery", icon: "layout-dashboard", category: "Layout",
+    defaultProps: {
+      columns: 3, gap: "16px", borderRadius: "12px", hoverEffect: true,
+      images: [
+        { src: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=600", alt: "Car", height: 280 },
+        { src: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600", alt: "Abstract", height: 200 },
+        { src: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=600", alt: "Nature", height: 320 },
+        { src: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600", alt: "Workspace", height: 240 },
+        { src: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600", alt: "Cinema", height: 180 },
+        { src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600", alt: "Gaming", height: 260 },
+      ],
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%", paddingTop: "40px", paddingBottom: "40px" },
+  },
+  "split-section": {
+    type: "split-section", label: "Split Section", icon: "columns-2", category: "Layout",
+    defaultProps: {
+      heading: "Build websites that convert", text: "Our platform gives you everything you need to create stunning, high-performance websites.",
+      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800",
+      ctaText: "Get Started", ctaHref: "#", layout: "50/50", reversed: false,
+      verticalAlign: "center", imageAspectRatio: "4/3", imageBorderRadius: "16px",
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%", paddingTop: "80px", paddingBottom: "80px" },
   },
   divider: {
     type: "divider", label: "Divider", icon: "minus", category: "Layout",
