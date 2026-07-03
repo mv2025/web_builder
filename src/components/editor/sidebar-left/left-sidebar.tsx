@@ -24,7 +24,7 @@ import {
   Calendar, ChevronsRight, MoreHorizontal, PanelLeft, ListOrdered,
   ExternalLink, Share2, UserCircle, MessageCircle, AlertTriangle,
   Tags, Table2, Terminal, Mail, Send, Flag, MessageSquare,
-  Play, ArrowRightLeft, ArrowDownUp, ZoomIn, Waves,
+  Play, ArrowRightLeft, ArrowDownUp, ZoomIn, Waves, Columns2,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
@@ -68,7 +68,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   "alert-triangle": AlertTriangle, tags: Tags, "table-2": Table2, terminal: Terminal,
   mail: Mail, send: Send, flag: Flag, "message-square": MessageSquare,
   "arrow-right-left": ArrowRightLeft, "arrow-down-up": ArrowDownUp, "zoom-in": ZoomIn,
-  waves: Waves,
+  waves: Waves, "columns-2": Columns2,
 }
 
 export function LeftSidebar() {

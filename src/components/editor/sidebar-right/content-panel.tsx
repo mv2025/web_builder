@@ -90,6 +90,12 @@ export function ContentPanel({ node }: ContentPanelProps) {
       "logos",
       "team",
       "bento-grid",
+      "masonry-grid",
+      "split-section",
+      "logo-marquee",
+      "comparison-table",
+      "before-after-slider",
+      "parallax-image",
       "footer",
       "horizontal-scroll",
       "vertical-scroll-cards",
@@ -4765,14 +4771,17 @@ function getListConfig(type: string): ListFieldConfig | null {
         key: "items",
         label: "Testimonials",
         itemLabel: "Testimonial",
-        nameField: "name",
+        nameField: "author",
         fields: [
           { key: "quote", label: "Quote", type: "textarea" },
-          { key: "name", label: "Name", type: "text" },
+          { key: "author", label: "Name", type: "text" },
           { key: "role", label: "Role", type: "text" },
+          { key: "avatar", label: "Avatar URL", type: "url" },
+          { key: "rating", label: "Rating (1-5)", type: "number" },
         ],
         extraFields: [
           { key: "heading", label: "Section Heading", type: "textarea" },
+          { key: "variant", label: "Variant", type: "select", options: ["grid", "carousel"] },
         ],
       };
     case "faq":
@@ -4797,13 +4806,17 @@ function getListConfig(type: string): ListFieldConfig | null {
         nameField: "name",
         fields: [
           { key: "name", label: "Plan Name", type: "text" },
-          { key: "price", label: "Price", type: "text" },
+          { key: "price", label: "Monthly Price", type: "text" },
+          { key: "yearlyPrice", label: "Yearly Price", type: "text" },
           { key: "period", label: "Period", type: "text" },
           { key: "description", label: "Description", type: "text" },
+          { key: "cta", label: "Button Text", type: "text" },
           { key: "popular", label: "Popular", type: "boolean" },
         ],
         extraFields: [
           { key: "heading", label: "Section Heading", type: "textarea" },
+          { key: "subheading", label: "Subheading", type: "text" },
+          { key: "showToggle", label: "Show Monthly/Yearly Toggle", type: "boolean" },
         ],
       };
     case "logos":
@@ -4840,18 +4853,131 @@ function getListConfig(type: string): ListFieldConfig | null {
         fields: [
           { key: "title", label: "Title", type: "text" },
           { key: "description", label: "Description", type: "textarea" },
+          { key: "icon", label: "Icon Name", type: "text" },
+          { key: "image", label: "Image URL", type: "url" },
           {
             key: "span",
-            label: "Column Span",
+            label: "Span (grid size)",
             type: "select",
-            options: ["1", "2", "3"],
+            options: ["1x1", "2x1", "1x2", "2x2"],
           },
-          {
-            key: "rowSpan",
-            label: "Row Span",
-            type: "select",
-            options: ["1", "2"],
-          },
+        ],
+        extraFields: [
+          { key: "heading", label: "Section Heading", type: "textarea" },
+          { key: "subheading", label: "Subheading", type: "text" },
+          { key: "gap", label: "Gap (px)", type: "number" },
+          { key: "cardBackground", label: "Card Background", type: "color" },
+          { key: "cardBorderColor", label: "Card Border Color", type: "color" },
+        ],
+      };
+    case "masonry-grid":
+      return {
+        key: "images",
+        label: "Images",
+        itemLabel: "Image",
+        nameField: "alt",
+        fields: [
+          { key: "src", label: "Image URL", type: "url" },
+          { key: "alt", label: "Alt Text", type: "text" },
+          { key: "height", label: "Height (px)", type: "number" },
+        ],
+        extraFields: [
+          { key: "columns", label: "Columns", type: "number" },
+          { key: "gap", label: "Gap (px)", type: "number" },
+          { key: "borderRadius", label: "Border Radius (px)", type: "number" },
+          { key: "hoverEffect", label: "Hover Effect", type: "select", options: ["zoom", "fade", "none"] },
+        ],
+      };
+    case "split-section":
+      return {
+        key: "_none",
+        label: "Split Section",
+        itemLabel: "Item",
+        nameField: "_value",
+        fields: [],
+        extraFields: [
+          { key: "heading", label: "Heading", type: "textarea" },
+          { key: "text", label: "Text", type: "textarea" },
+          { key: "image", label: "Image URL", type: "url" },
+          { key: "ctaText", label: "CTA Button Text", type: "text" },
+          { key: "layout", label: "Layout", type: "select", options: ["50/50", "60/40", "40/60"] },
+          { key: "reversed", label: "Reverse Order", type: "boolean" },
+          { key: "verticalAlign", label: "Vertical Align", type: "select", options: ["top", "center", "bottom"] },
+          { key: "imageAspectRatio", label: "Image Aspect Ratio", type: "select", options: ["auto", "1/1", "4/3", "16/9", "3/2"] },
+          { key: "imageBorderRadius", label: "Image Border Radius", type: "text" },
+        ],
+      };
+    case "logo-marquee":
+      return {
+        key: "logos",
+        label: "Logos",
+        itemLabel: "Logo",
+        nameField: "name",
+        fields: [
+          { key: "name", label: "Name", type: "text" },
+          { key: "src", label: "Image URL", type: "url" },
+        ],
+        extraFields: [
+          { key: "heading", label: "Heading", type: "text" },
+          { key: "speed", label: "Speed (seconds)", type: "number" },
+          { key: "direction", label: "Direction", type: "select", options: ["left", "right"] },
+          { key: "pauseOnHover", label: "Pause on Hover", type: "boolean" },
+          { key: "logoHeight", label: "Logo Height (px)", type: "number" },
+          { key: "gap", label: "Gap (px)", type: "number" },
+          { key: "grayscale", label: "Grayscale Logos", type: "boolean" },
+        ],
+      };
+    case "comparison-table":
+      return {
+        key: "features",
+        label: "Features",
+        itemLabel: "Feature",
+        nameField: "name",
+        fields: [
+          { key: "name", label: "Feature Name", type: "text" },
+          { key: "category", label: "Category", type: "text" },
+        ],
+        extraFields: [
+          { key: "heading", label: "Heading", type: "textarea" },
+          { key: "subheading", label: "Subheading", type: "text" },
+          { key: "accentColor", label: "Accent Color", type: "color" },
+        ],
+      };
+    case "before-after-slider":
+      return {
+        key: "_none",
+        label: "Before/After Slider",
+        itemLabel: "Item",
+        nameField: "_value",
+        fields: [],
+        extraFields: [
+          { key: "beforeImage", label: "Before Image URL", type: "url" },
+          { key: "afterImage", label: "After Image URL", type: "url" },
+          { key: "beforeLabel", label: "Before Label", type: "text" },
+          { key: "afterLabel", label: "After Label", type: "text" },
+          { key: "orientation", label: "Orientation", type: "select", options: ["horizontal", "vertical"] },
+          { key: "initialPosition", label: "Initial Position (%)", type: "number" },
+          { key: "sliderColor", label: "Slider Color", type: "color" },
+          { key: "height", label: "Height", type: "text" },
+          { key: "borderRadius", label: "Border Radius", type: "text" },
+        ],
+      };
+    case "parallax-image":
+      return {
+        key: "_none",
+        label: "Parallax Image",
+        itemLabel: "Item",
+        nameField: "_value",
+        fields: [],
+        extraFields: [
+          { key: "image", label: "Image URL", type: "url" },
+          { key: "height", label: "Height", type: "text" },
+          { key: "speed", label: "Parallax Speed", type: "number" },
+          { key: "overlayColor", label: "Overlay Color", type: "color" },
+          { key: "overlayOpacity", label: "Overlay Opacity (0-1)", type: "number" },
+          { key: "heading", label: "Heading", type: "textarea" },
+          { key: "subheading", label: "Subheading", type: "text" },
+          { key: "textAlign", label: "Text Align", type: "select", options: ["left", "center", "right"] },
         ],
       };
     case "footer":
@@ -5127,8 +5253,8 @@ function ListBasedContentPanel({
           </label>
           <input
             type="number"
-            value={Number(val ?? 0)}
-            onChange={(e) => update(field.key, Number(e.target.value))}
+            value={Number.isFinite(Number(val)) ? Number(val) : 0}
+            onChange={(e) => update(field.key, e.target.value === "" ? 0 : Number(e.target.value))}
             style={baseInput}
           />
         </div>
@@ -5172,6 +5298,7 @@ function ListBasedContentPanel({
       )}
 
       {/* Items list */}
+      {config.key !== "_none" && (<>
       <SectionLabel>
         {config.label} ({items.length})
       </SectionLabel>
@@ -5448,6 +5575,7 @@ function ListBasedContentPanel({
       >
         <Plus size={14} /> Add {config.itemLabel}
       </button>
+      </>)}
     </div>
   );
 }

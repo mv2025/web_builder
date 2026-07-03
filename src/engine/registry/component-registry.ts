@@ -763,6 +763,20 @@ const registry: Record<ComponentType, ComponentMeta> = {
   },
 
   // ── Animated ────────────────────────────────────────────────────────────────
+  "volumetric-light": {
+    type: "volumetric-light", label: "Volumetric Light", icon: "sparkles", category: "Animated",
+    defaultProps: {
+      bgColor: "#000000", lightColor: "#e6f0ff", label: "PERFORMANCE",
+      minHeight: "100vh",
+      stats: [
+        { label: "Render Time", to: 16, suffix: "ms" },
+        { label: "Frame Rate", to: 60, suffix: "fps" },
+        { label: "Uptime", to: 99.9, suffix: "%" },
+      ],
+    },
+    canHaveChildren: false, draggable: true, droppable: false, resizable: true,
+    defaultStyles: { width: "100%" },
+  },
   "volumetric-hero": {
     type: "volumetric-hero", label: "Volumetric Hero", icon: "box", category: "Animated",
     defaultProps: {

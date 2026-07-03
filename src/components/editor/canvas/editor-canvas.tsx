@@ -129,23 +129,21 @@ export function EditorCanvas() {
 
       if (movingNodeId) {
         moveNode(movingNodeId, target.parentId, target.index);
-        
-        // Freeform placement: Automatically make absolute if dropped on root
-        if (!target.parentId) {
-          updateNodeStyles(
-            movingNodeId,
-            {
-              position: "absolute",
-              top: `${dropY}px`,
-              left: `${dropX}px`,
-              marginLeft: "0",
-              marginRight: "0",
-              marginTop: "0",
-              marginBottom: "0",
-            },
-            breakpoint
-          );
-        }
+
+        // Freeform placement: Automatically make absolute
+        updateNodeStyles(
+          movingNodeId,
+          {
+            position: "absolute",
+            top: `${dropY}px`,
+            left: `${dropX}px`,
+            marginLeft: "0",
+            marginRight: "0",
+            marginTop: "0",
+            marginBottom: "0",
+          },
+          breakpoint
+        );
         return;
       }
 
@@ -153,15 +151,15 @@ export function EditorCanvas() {
 
       const node = createNode(type);
 
-      // Freeform placement: Automatically make absolute if dropped on root
+      // Freeform placement: Position component exactly where dropped
       const isWave = /^wave-\d+$/.test(type);
-      if (!isWave && (!target.parentId || node.styles.desktop?.position === "absolute")) {
+      if (!isWave) {
         let finalDropX = dropX;
         if (node.styles.desktop?.width === "100%") {
           node.styles.desktop.width = "400px";
           finalDropX = Math.max(0, dropX - 200);
         }
-        
+
         node.styles.desktop = {
           ...(node.styles.desktop as StyleProps),
           position: "absolute",

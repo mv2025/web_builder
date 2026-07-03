@@ -51,6 +51,13 @@ import { NormalStoryCarouselBlock } from "@/components/builder-components/animat
 import { TextRevealBlock } from "@/components/builder-components/animated/text-reveal-block"
 import { VolumetricLightBlock } from "@/components/builder-components/animated/volumetric-light-block"
 import VolumetricHeroSection from "@/components/builder-components/animated/VolumetricHeroSection"
+import { BentoGridBlock } from "@/components/builder-components/layout/bento-grid-block"
+import { MasonryGalleryBlock } from "@/components/builder-components/layout/masonry-gallery-block"
+import { SplitSectionBlock } from "@/components/builder-components/layout/split-section-block"
+import { LogoMarqueeBlock } from "@/components/builder-components/marketing/logo-marquee-block"
+import { ComparisonTableBlock } from "@/components/builder-components/marketing/comparison-table-block"
+import { BeforeAfterSliderBlock } from "@/components/builder-components/interactive/before-after-slider-block"
+import { ParallaxImageBlock } from "@/components/builder-components/interactive/parallax-image-block"
 import { WaveBlock } from "@/components/builder-components/waves/wave-block"
 import {
   SliderBlock,
@@ -1480,75 +1487,21 @@ function ComponentContent({
         />
       );
 
-    case "masonry-grid": {
-      const masonryCols =
-        breakpoint === "mobile"
-          ? 1
-          : breakpoint === "tablet"
-            ? 2
-            : ((props.columns as number) ?? 3);
-      return (
-        <div style={{ columns: masonryCols, gap: "16px" }}>
-          {[120, 180, 140, 200, 160, 130].map((h, i) => (
-            <div
-              key={i}
-              style={{
-                height: `${h}px`,
-                borderRadius: "inherit",
-                background: "rgba(128,128,128,0.06)",
-                border: "1px solid rgba(128,128,128,0.2)",
-                marginBottom: "16px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                opacity: 0.5,
-                fontSize: "0.85em",
-                breakInside: "avoid" as never,
-              }}
-            >
-              Item {i + 1}
-            </div>
-          ))}
-        </div>
-      );
-    }
+    case "masonry-grid":
+      return <MasonryGalleryBlock {...props} breakpoint={breakpoint} />;
+    case "split-section":
+      return <SplitSectionBlock {...props} breakpoint={breakpoint} />;
+    case "logo-marquee":
+      return <LogoMarqueeBlock {...props} breakpoint={breakpoint} />;
+    case "comparison-table":
+      return <ComparisonTableBlock {...props} breakpoint={breakpoint} />;
+    case "before-after-slider":
+      return <BeforeAfterSliderBlock {...props} breakpoint={breakpoint} />;
+    case "parallax-image":
+      return <ParallaxImageBlock {...props} breakpoint={breakpoint} />;
     // ── Logos strip ───────────────────────────────────────────────────────────
     case "logos":
-      return (
-        <div>
-          {props.heading && (
-            <p
-              style={{
-                textAlign: "center",
-                fontSize: "0.8em",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                marginBottom: "24px",
-                opacity: 0.5,
-              }}
-            >
-              {props.heading as string}
-            </p>
-          )}
-          <div
-            style={{
-              display: "flex",
-              gap: breakpoint === "mobile" ? "24px" : "48px",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              opacity: 0.4,
-            }}
-          >
-            {["Vercel", "Stripe", "Linear", "Notion", "Figma", "GitHub"].map(
-              (l) => (
-                <span key={l} style={{ fontSize: "1.25em", fontWeight: 800 }}>
-                  {l}
-                </span>
-              ),
-            )}
-          </div>
-        </div>
-      );
+      return <LogoMarqueeBlock {...props} breakpoint={breakpoint} />;
 
     // ── Media (extra) ──────────────────────────────────────────────────────────
     case "audio":
@@ -3706,61 +3659,6 @@ function TimelineBlock({
           </div>
         ),
       )}
-    </div>
-  );
-}
-
-function BentoGridBlock({
-  items = [],
-  breakpoint = "desktop",
-}: {
-  items?: unknown[];
-  breakpoint?: string;
-}) {
-  const placeholders =
-    items.length > 0
-      ? items
-      : [
-          { title: "Feature 1", description: "Description here", span: 2 },
-          { title: "Feature 2", description: "Another one", span: 1 },
-          { title: "Feature 3", description: "And another", span: 1 },
-          { title: "Feature 4", description: "Last one", span: 2 },
-        ];
-  const cols = breakpoint === "mobile" ? 1 : breakpoint === "tablet" ? 2 : 3;
-  return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        gap: "16px",
-      }}
-    >
-      {(
-        placeholders as { title: string; description: string; span?: number }[]
-      ).map((item, i) => (
-        <div
-          key={i}
-          style={{
-            gridColumn:
-              breakpoint === "mobile"
-                ? "span 1"
-                : `span ${Math.min(item.span ?? 1, cols)}`,
-            padding: breakpoint === "mobile" ? "16px" : "24px",
-            borderRadius: "inherit",
-            background: "rgba(128,128,128,0.06)",
-            border: "1px solid rgba(128,128,128,0.12)",
-          }}
-        >
-          <h3
-            style={{ fontSize: "1.15em", fontWeight: 700, marginBottom: "8px" }}
-          >
-            {item.title}
-          </h3>
-          <p style={{ fontSize: "0.875em", opacity: 0.5 }}>
-            {item.description}
-          </p>
-        </div>
-      ))}
     </div>
   );
 }

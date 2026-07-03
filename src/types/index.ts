@@ -238,7 +238,7 @@ export type ComponentType =
   // Utility
   | "divider" | "badge" | "card" | "icon"
   // Animated
-  | "horizontal-scroll" | "vertical-scroll-cards" | "text-zoom-scroll" | "story-scroll" | "normal-story-carousel" | "text-reveal"
+  | "horizontal-scroll" | "vertical-scroll-cards" | "text-zoom-scroll" | "story-scroll" | "normal-story-carousel" | "text-reveal" | "volumetric-hero" | "volumetric-light"
   // Waves — decorative SVG backgrounds
   | "wave-1" | "wave-2" | "wave-3" | "wave-4" | "wave-5"
   | "wave-6" | "wave-7" | "wave-8" | "wave-9" | "wave-10"

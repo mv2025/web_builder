@@ -51,15 +51,25 @@ export function findDropTarget(
     bestContainer.el.querySelectorAll<HTMLElement>(":scope > [data-node-id]")
   ).filter((el) => el.getAttribute("data-node-id") !== excludeId)
 
-  // For containers that render children in nested wrappers (card-slider, tabs, etc.),
-  // direct children won't be found. Fall back to all descendant node-id elements
-  // whose data-parent-id matches this container.
+  // For containers that render children in nested wrappers (innerClip div,
+  // card-slider, tabs, etc.), direct children won't be found via :scope >.
+  // Fall back to the first-level data-node-id descendants that are immediate
+  // children of this container's component tree.
   if (directChildren.length === 0 && bestContainer.id) {
     const nested = Array.from(
       bestContainer.el.querySelectorAll<HTMLElement>("[data-node-id]")
-    ).filter((el) => el.getAttribute("data-node-id") !== excludeId)
+    ).filter((el) => {
+      if (el.getAttribute("data-node-id") === excludeId) return false
+      // Only keep elements whose closest ancestor node-id is this container
+      let p = el.parentElement
+      while (p && p !== bestContainer.el) {
+        if (p.hasAttribute("data-node-id") && p.getAttribute("data-node-id") !== bestContainer.id) return false
+        p = p.parentElement
+      }
+      return true
+    })
     if (nested.length > 0) {
-      return { parentId: bestContainer.id, index: nested.length }
+      directChildren = nested
     }
   }
 
@@ -67,7 +77,13 @@ export function findDropTarget(
     return { parentId: bestContainer.id, index: 0 }
   }
 
-  const style = window.getComputedStyle(bestContainer.el)
+  // Determine layout direction from the container or its first wrapper child
+  let layoutEl = bestContainer.el
+  const firstChild = bestContainer.el.firstElementChild as HTMLElement | null
+  if (directChildren.length > 0 && firstChild && !firstChild.hasAttribute("data-node-id")) {
+    layoutEl = firstChild
+  }
+  const style = window.getComputedStyle(layoutEl)
   const isRow = style.display.includes("flex") &&
     (style.flexDirection === "row" || style.flexDirection === "row-reverse")
 
@@ -94,28 +110,50 @@ export function getDropIndicator(
 
   if (!containerEl) return null
 
-  const directChildren = Array.from(
+  let directChildren = Array.from(
     containerEl.querySelectorAll<HTMLElement>(":scope > [data-node-id]")
   ).filter((el) => el.getAttribute("data-node-id") !== excludeId)
+
+  // Same nested-child fallback as findDropTarget
+  if (directChildren.length === 0 && target.parentId) {
+    const nested = Array.from(
+      containerEl.querySelectorAll<HTMLElement>("[data-node-id]")
+    ).filter((el) => {
+      if (el.getAttribute("data-node-id") === excludeId) return false
+      let p = el.parentElement
+      while (p && p !== containerEl) {
+        if (p.hasAttribute("data-node-id") && p.getAttribute("data-node-id") !== target.parentId) return false
+        p = p.parentElement
+      }
+      return true
+    })
+    if (nested.length > 0) directChildren = nested
+  }
 
   const canvasRect = canvasEl.getBoundingClientRect()
   const containerRect = containerEl.getBoundingClientRect()
 
-  const style = window.getComputedStyle(containerEl)
+  let layoutEl: Element = containerEl
+  const firstChild = containerEl.firstElementChild
+  if (directChildren.length > 0 && firstChild && !firstChild.hasAttribute("data-node-id")) {
+    layoutEl = firstChild
+  }
+  const style = window.getComputedStyle(layoutEl)
   const padTop = parseFloat(style.paddingTop) || 0
   const padLeft = parseFloat(style.paddingLeft) || 0
   const padRight = parseFloat(style.paddingRight) || 0
   const padBottom = parseFloat(style.paddingBottom) || 0
 
-  const contentLeft = containerRect.left + padLeft - canvasRect.left
-  const contentWidth = containerRect.width - padLeft - padRight
+  const layoutRect = layoutEl.getBoundingClientRect()
+  const contentLeft = layoutRect.left + padLeft - canvasRect.left
+  const contentWidth = layoutRect.width - padLeft - padRight
 
   const isRow = style.display.includes("flex") &&
     (style.flexDirection === "row" || style.flexDirection === "row-reverse")
 
   if (isRow) {
-    const contentTop = containerRect.top + padTop - canvasRect.top
-    const contentHeight = containerRect.height - padTop - padBottom
+    const contentTop = layoutRect.top + padTop - canvasRect.top
+    const contentHeight = layoutRect.height - padTop - padBottom
 
     let x: number
     if (directChildren.length === 0) {
@@ -132,7 +170,7 @@ export function getDropIndicator(
 
   let y: number
   if (directChildren.length === 0) {
-    y = containerRect.top + padTop + 4 - canvasRect.top
+    y = layoutRect.top + padTop + 4 - canvasRect.top
   } else if (target.index >= directChildren.length) {
     const last = directChildren[directChildren.length - 1].getBoundingClientRect()
     y = last.bottom + 2 - canvasRect.top
